@@ -3,3 +3,5 @@ requests
 ipywidgets
 soundfile
 git+https://github.com/wenet-e2e/wespeaker.git
+pandas
+matplotlib
