@@ -11,8 +11,18 @@ from torch.utils.data import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
 import wespeaker
+from sklearn.metrics import (
+    confusion_matrix,
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+)
+import json
+
 
 # --- Data scanning functions ---
+
 
 def scan_directory_voxceleb1(path) -> pd.DataFrame:
     # scanning a dataset directory of voxceleb1 structure
@@ -27,10 +37,22 @@ def scan_directory_voxceleb1(path) -> pd.DataFrame:
                         file_path = os.path.join(utterance_path, file)
                         if os.path.isfile(file_path):
                             embedding = "embedding_placeholder"
-                            data.append([file_path, person_id, utterance_env, file, embedding])
-    
-    df = pd.DataFrame(data, columns=['path', 'person_id', 'utterance_env', 'utterance_filename', 'embedding'])
+                            data.append(
+                                [file_path, person_id, utterance_env, file, embedding]
+                            )
+
+    df = pd.DataFrame(
+        data,
+        columns=[
+            "path",
+            "person_id",
+            "utterance_env",
+            "utterance_filename",
+            "embedding",
+        ],
+    )
     return df
+
 
 def scan_directory_voxceleb2(test_dir) -> pd.DataFrame:
     # scanning a dataset directory of voxceleb2 structure custom squeezed version
@@ -44,28 +66,33 @@ def scan_directory_voxceleb2(test_dir) -> pd.DataFrame:
                     embedding = "embedding_placeholder"
                     data.append([file_path, person_id, file, embedding])
 
-    df = pd.DataFrame(data, columns=['path', 'person_id', 'utterance_filename', 'embedding'])
+    df = pd.DataFrame(
+        data, columns=["path", "person_id", "utterance_filename", "embedding"]
+    )
     return df
 
-# --- Data conversion functions --- 
+
+# --- Data conversion functions ---
 # (e.g. converting mp4 to wav)
 # need to have ffmpeg installed
+
 
 def convert_mp4_to_wav(mp4_path, wav_path):
     command = ["ffmpeg", "-i", mp4_path, wav_path]
     subprocess.run(command, check=True)
 
 
-
 def process_voxceleb2_to_wav(df, output_dir):
     os.makedirs(output_dir, exist_ok=True)
 
     for index, row in tqdm(df.iterrows(), total=len(df), desc="Converting MP4 to WAV"):
-        person_dir = os.path.join(output_dir, row['person_id'])
+        person_dir = os.path.join(output_dir, row["person_id"])
         os.makedirs(person_dir, exist_ok=True)
-        
-        mp4_file = row['path']
-        wav_file = os.path.join(person_dir, os.path.splitext(os.path.basename(mp4_file))[0] + ".wav")
+
+        mp4_file = row["path"]
+        wav_file = os.path.join(
+            person_dir, os.path.splitext(os.path.basename(mp4_file))[0] + ".wav"
+        )
         convert_mp4_to_wav(mp4_file, wav_file)
         print(f"Converted {mp4_file} to {wav_file}")
 
@@ -105,16 +132,16 @@ class AudioDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        audio_path = self.dataframe.iloc[idx]['path']
+        audio_path = self.dataframe.iloc[idx]["path"]
         waveform, sample_rate = torchaudio.load(audio_path)
 
         waveform = pad_or_cut_wave(waveform, self.max_len)
 
-        sample = {'path': audio_path, 'waveform': waveform, 'sample_rate': sample_rate}
+        sample = {"path": audio_path, "waveform": waveform, "sample_rate": sample_rate}
 
         return sample
 
-    
+
 class AudioDatasetFBank(Dataset):
     # you need to provide model to compute fbank features
     def __init__(self, dataframe, max_len, model):
@@ -141,7 +168,9 @@ class AudioDatasetFBank(Dataset):
 
         return sample
 
+
 # loading models
+
 
 def load_model(model_name):
     if model_name == "campplus":
@@ -149,15 +178,17 @@ def load_model(model_name):
         campplus_model.set_device("mps")
         return campplus_model
     elif model_name == "ecapa_tdnn":
-        ecapa_tdnn = wespeaker.load_model_local("./models/voxceleb_ECAPA1024")
+        ecapa_tdnn = wespeaker.load_model_local("../models/voxceleb_ECAPA1024")
         ecapa_tdnn.set_device("mps")
         return ecapa_tdnn
     elif model_name == "resnet34":
-        resnet34_model = wespeaker.load_model_local("./models/cnceleb_resnet34")
+        resnet34_model = wespeaker.load_model_local("../models/cnceleb_resnet34")
         resnet34_model.set_device("mps")
         return resnet34_model
 
+
 # --- We speaker wrapper evaluation ---
+
 
 def evaluate_wespeaker_fbank(we_speaker_model, dataloader):
     all_embeddings = {}
@@ -177,13 +208,14 @@ def evaluate_wespeaker_fbank(we_speaker_model, dataloader):
 
     return all_embeddings
 
+
 def evaluate_torch_model(model, dataloader):
     all_embeddings = {}
     model.eval()
     with torch.no_grad():
         for batch in tqdm(dataloader, desc="Evaluating"):
             utts = batch["path"]
-            features = batch["waveform"].float().to('mps')
+            features = batch["waveform"].float().to("mps")
             # Forward through model
             embeds = model.forward(features).cpu().numpy()
 
@@ -193,19 +225,25 @@ def evaluate_torch_model(model, dataloader):
 
     return all_embeddings
 
+
 # save embeddings to csv
 
+
 def save_embeddings_to_csv(df, embeddings, output_path):
-    df['embedding'] = df['path'].map(embeddings)
+    df["embedding"] = df["path"].map(embeddings)
 
     df.to_csv(output_path, index=False)
 
 
 # --- Evaluation metrics ---
 
+
 def preprocess_embeddings_df(df):
-    df['embedding'] = df['embedding'].apply(lambda x: np.array(x.strip('[]').split(), dtype=float))
+    df["embedding"] = df["embedding"].apply(
+        lambda x: np.array(x.strip("[]").split(), dtype=float)
+    )
     return df
+
 
 def cosine_similarity(e1, e2):
     cosine_score = torch.dot(e1, e2) / (torch.norm(e1) * torch.norm(e2))
@@ -224,8 +262,9 @@ def cosine_sim(tensor1: torch.Tensor, tensor2: torch.Tensor) -> torch.Tensor:
 
     return normalized_similarity_matrix
 
+
 def calculate_cosine_similarity_matrix(df):
-    embeddings = np.stack(df['embedding'].values)
+    embeddings = np.stack(df["embedding"].values)
     embeddings_tensor = torch.tensor(embeddings, dtype=torch.float32)
     similarity_matrix = cosine_sim(embeddings_tensor, embeddings_tensor)
 
@@ -238,6 +277,7 @@ def calculate_cosine_similarity_matrix(df):
     scores = similarity_matrix[upper_triangle_indices]
 
     return scores, class_labels
+
 
 def calculate_eer(scores, class_labels):
     genuine_scores = scores[class_labels]
@@ -261,10 +301,13 @@ def calculate_eer(scores, class_labels):
 
     return EER, EER_threshold, thresholds, FAR, FRR
 
+
 def plot_frr_far(FAR, FRR, EER, EER_threshold, thresholds):
     plt.plot(thresholds, FAR, label="FAR", color="red")
     plt.plot(thresholds, FRR, label="FRR", color="blue")
-    plt.axvline(EER_threshold, color="green", linestyle="--", label=f"EER = {EER * 100:.2f}%")
+    plt.axvline(
+        EER_threshold, color="green", linestyle="--", label=f"EER = {EER * 100:.2f}%"
+    )
     plt.xlabel("Threshold")
     plt.ylabel("Rate")
     plt.title("FAR and FRR vs Threshold")
@@ -272,6 +315,105 @@ def plot_frr_far(FAR, FRR, EER, EER_threshold, thresholds):
     plt.grid()
 
     # Annotate the EER threshold
-    plt.text(EER_threshold, 0.5, f'{EER_threshold:.2f}', color="green")
+    plt.text(EER_threshold, 0.5, f"{EER_threshold:.2f}", color="green")
 
     plt.show()
+
+
+def calculate_min_dcf(scores, class_labels, p_target=0.01, c_miss=1, c_fa=1):
+    """
+    Calculate the minimum Detection Cost Function (minDCF).
+
+    Args:
+        scores: np.ndarray, similarity scores.
+        class_labels: np.ndarray, ground truth labels (1 for same speaker, 0 for different).
+        p_target: float, prior probability of the target class.
+        c_miss: float, cost of a missed detection.
+        c_fa: float, cost of a false acceptance.
+
+    Returns:
+        min_dcf: float, the minimum Detection Cost Function value.
+        best_threshold: float, the threshold corresponding to minDCF.
+    """
+    # Sort thresholds between the minimum and maximum similarity scores
+    scores = np.array(scores)
+    thresholds = np.linspace(np.min(scores), np.max(scores), 1000)
+
+    min_dcf = float("inf")
+    best_threshold = None
+
+    for threshold in thresholds:
+        # Generate predictions
+        predictions = scores >= threshold
+
+        # Compute False Rejection Rate (FRR) and False Acceptance Rate (FAR)
+        fn = np.sum((class_labels == 1) & (predictions == 0))  # Missed detections
+        fp = np.sum((class_labels == 0) & (predictions == 1))  # False acceptances
+        tp = np.sum((class_labels == 1) & (predictions == 1))
+        tn = np.sum((class_labels == 0) & (predictions == 0))
+
+        # Total positive and negative samples
+        n_target = np.sum(class_labels == 1)
+        n_non_target = np.sum(class_labels == 0)
+
+        p_miss = fn / n_target if n_target > 0 else 0  # Miss probability
+        p_fa = (
+            fp / n_non_target if n_non_target > 0 else 0
+        )  # False acceptance probability
+
+        # Calculate DCF
+        dcf = c_miss * p_target * p_miss + c_fa * (1 - p_target) * p_fa
+
+        # Track the minimum DCF and corresponding threshold
+        if dcf < min_dcf:
+            min_dcf = dcf
+            best_threshold = threshold
+
+    return min_dcf, best_threshold
+
+
+def evaluate_metrics(scores, class_labels, threshold):
+    """
+    Evaluate confusion matrix and classification metrics based on cosine similarity scores.
+
+    Args:
+        scores: np.ndarray, similarity scores.
+        class_labels: np.ndarray, ground truth labels (1 for same speaker, 0 for different).
+        threshold: float, threshold for determining positive or negative classification.
+
+    Returns:
+        metrics_dict: dict, containing confusion matrix and metrics.
+    """
+    # Generate predictions based on the threshold
+    predictions = scores >= threshold  # 1 for positive, 0 for negative
+
+    # Compute confusion matrix
+    tn, fp, fn, tp = confusion_matrix(class_labels, predictions).ravel().astype(int)
+
+    # Calculate metrics
+    accuracy = accuracy_score(class_labels, predictions)
+    precision = precision_score(class_labels, predictions)
+    recall = recall_score(class_labels, predictions)
+    f1 = f1_score(class_labels, predictions)
+
+    # Package metrics into a dictionary
+    metrics_dict = {
+        "confusion_matrix": {"tn": tn, "fp": fp, "fn": fn, "tp": tp},
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+        "f1_score": f1,
+    }
+
+    return metrics_dict
+
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NumpyEncoder, self).default(obj)

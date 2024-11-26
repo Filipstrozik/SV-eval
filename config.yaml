@@ -1,0 +1,7 @@
+dataset_path: '../data/voxceleb2_wav'
+model_name: 'ecapa_tdnn'
+max_len: 80000 # 5 * 16000
+batch_size: 32
+embeddings_output_path: '../embeds/'
+results_output_path: '../results/'
+device: 'mps'
