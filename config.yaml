@@ -1,7 +1,8 @@
 dataset_path: '../data/voxceleb2_wav'
-model_name: 'ecapa_tdnn'
+model_name: 'redimnet'
 max_len: 80000 # 5 * 16000
 batch_size: 32
+fbank_processing: False
 embeddings_output_path: '../embeds/'
 results_output_path: '../results/'
 device: 'mps'

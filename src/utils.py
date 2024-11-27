@@ -19,7 +19,7 @@ from sklearn.metrics import (
     f1_score,
 )
 import json
-
+from huggingface_hub import hf_hub_download
 
 # --- Data scanning functions ---
 
@@ -173,18 +173,40 @@ class AudioDatasetFBank(Dataset):
 
 
 def load_model(model_name):
-    if model_name == "campplus":
-        campplus_model = wespeaker.load_model("campplus")
-        campplus_model.set_device("mps")
-        return campplus_model
-    elif model_name == "ecapa_tdnn":
-        ecapa_tdnn = wespeaker.load_model_local("../models/voxceleb_ECAPA1024")
-        ecapa_tdnn.set_device("mps")
-        return ecapa_tdnn
-    elif model_name == "resnet34":
-        resnet34_model = wespeaker.load_model_local("../models/cnceleb_resnet34")
-        resnet34_model.set_device("mps")
-        return resnet34_model
+    match model_name:
+        case "campplus":
+            campplus_model = wespeaker.load_model("campplus")
+            campplus_model.set_device("mps")
+            return campplus_model
+        case "ecapa_tdnn":
+            ecapa_tdnn = wespeaker.load_model_local("../models/voxceleb_ECAPA1024")
+            ecapa_tdnn.set_device("mps")
+            return ecapa_tdnn
+        case "resnet34":
+            resnet34_model = wespeaker.load_model_local("../models/cnceleb_resnet34")
+            resnet34_model.set_device("mps")
+            return resnet34_model
+        case "redimnet":
+            model_name = "b2"  # ~b3-b4 size
+            train_type = "ptn"
+            dataset = "vox2"
+            redimnet_model = torch.hub.load(
+                "IDRnD/ReDimNet",
+                "ReDimNet",
+                model_name=model_name,
+                train_type=train_type,
+                dataset=dataset,
+            )
+            return redimnet_model
+        case "ecapa2":
+            model_file = hf_hub_download(
+                repo_id="Jenthe/ECAPA2", filename="ecapa2.pt", cache_dir=None
+            )
+            ecapa2_model = torch.jit.load(model_file, map_location="cpu")
+            ecapa2_model.to("mps")
+            return ecapa2_model
+        case _:
+            raise ValueError(f"Model {model_name} not supported")
 
 
 # --- We speaker wrapper evaluation ---
@@ -209,13 +231,13 @@ def evaluate_wespeaker_fbank(we_speaker_model, dataloader):
     return all_embeddings
 
 
-def evaluate_torch_model(model, dataloader):
+def evaluate_torch_model(model, dataloader, device):
     all_embeddings = {}
     model.eval()
     with torch.no_grad():
         for batch in tqdm(dataloader, desc="Evaluating"):
             utts = batch["path"]
-            features = batch["waveform"].float().to("mps")
+            features = batch["waveform"].float().to(device)
             # Forward through model
             embeds = model.forward(features).cpu().numpy()
 

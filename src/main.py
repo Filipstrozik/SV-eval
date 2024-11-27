@@ -21,6 +21,9 @@ embeddings_output_path = config["embeddings_output_path"]
 results_output_path = config["results_output_path"]
 max_len = config["max_len"]
 batch_size = config["batch_size"]
+fbank_processing = config["fbank_processing"]
+device = config["device"]
+
 
 print("Scanning dataset...")
 df = scan_directory_voxceleb2(dataset_path)
@@ -28,10 +31,29 @@ df = scan_directory_voxceleb2(dataset_path)
 print("Loading model...")
 model = load_model(model_name)
 
-audio_dataset = AudioDatasetFBank(df, max_len, model)
+
+if fbank_processing:
+    audio_dataset = AudioDatasetFBank(df, max_len, model)
+else:
+    audio_dataset = AudioDataset(df, max_len)
+
 audio_loader = DataLoader(audio_dataset, batch_size=batch_size, shuffle=False)
+
 print("Evaluating model...")
-embeddings = evaluate_wespeaker_fbank(model, audio_loader)
+
+try:
+    if fbank_processing:
+        embeddings = evaluate_wespeaker_fbank(model, audio_loader)
+    else:
+        embeddings = evaluate_torch_model(model, audio_loader, device=device)
+except Exception as e:
+    print(f"Error occurred: {e}. Moving model to CPU and evaluating again.")
+    model.to("cpu")
+    if fbank_processing:
+        embeddings = evaluate_wespeaker_fbank(model, audio_loader)
+    else:
+        embeddings = evaluate_torch_model(model, audio_loader, device="cpu")
+
 print("Saving embeddings...")
 save_embeddings_to_csv(
     df, embeddings, f"{embeddings_output_path}/{model_name}_embeddings.csv"
