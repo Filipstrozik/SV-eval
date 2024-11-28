@@ -1,0 +1,22 @@
+{
+  "config": {
+    "dataset_path": "../data/voxceleb2_wav",
+    "model_name": "ecapa_tdnn",
+    "max_len": 80000,
+    "batch_size": 32,
+    "embeddings_output_path": "../embeds/",
+    "results_output_path": "../results/",
+    "device": "mps"
+  },
+  "EER": 0.027523404509197012,
+  "EER_threshold": 0.6396396396396397,
+  "minDCF": 0.0015585979970188107,
+  "best_threshold": 0.734262923131118,
+  "metrics": {
+    "confusion_matrix": { "tn": 2920827, "fp": 82873, "fn": 1657, "tp": 58693 },
+    "accuracy": 0.9724123300859973,
+    "precision": 0.4145981379709817,
+    "recall": 0.9725434962717482,
+    "f1_score": 0.5813605657798292
+  }
+}

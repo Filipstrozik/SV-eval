@@ -20,6 +20,10 @@ from sklearn.metrics import (
 )
 import json
 from huggingface_hub import hf_hub_download
+import sys
+
+sys.path.append("./helper_libs")
+from redimnet.model import ReDimNetWrap
 
 # --- Data scanning functions ---
 
@@ -170,12 +174,10 @@ class AudioDatasetFBank(Dataset):
 
 
 # loading models
-
-
 def load_model(model_name):
     match model_name:
         case "campplus":
-            campplus_model = wespeaker.load_model("campplus")
+            campplus_model = wespeaker.load_model(f"../models/voxceleb_CAM++")
             campplus_model.set_device("mps")
             return campplus_model
         case "ecapa_tdnn":
@@ -183,26 +185,33 @@ def load_model(model_name):
             ecapa_tdnn.set_device("mps")
             return ecapa_tdnn
         case "resnet34":
-            resnet34_model = wespeaker.load_model_local("../models/cnceleb_resnet34")
+            resnet34_model = wespeaker.load_model_local("../models/voxceleb_resnet34")
             resnet34_model.set_device("mps")
             return resnet34_model
         case "redimnet":
-            model_name = "b2"  # ~b3-b4 size
-            train_type = "ptn"
-            dataset = "vox2"
-            redimnet_model = torch.hub.load(
-                "IDRnD/ReDimNet",
-                "ReDimNet",
-                model_name=model_name,
-                train_type=train_type,
-                dataset=dataset,
-            )
+            path = "../models/ReDimNet/b6-vox2-ptn.pt"
+            full_state_dict = torch.load(path)
+            model_config = full_state_dict["model_config"]
+            state_dict = full_state_dict["state_dict"]
+
+            # Create an instance of the model using the configuration
+            redimnet_model = ReDimNetWrap(**model_config)
+
+            # Load the state dictionary into the model
+            redimnet_model.load_state_dict(state_dict)
+
+            # Move the model to the desired device (e.g., 'mps' or 'cpu')
+            redimnet_model.to("mps")
             return redimnet_model
         case "ecapa2":
             model_file = hf_hub_download(
-                repo_id="Jenthe/ECAPA2", filename="ecapa2.pt", cache_dir=None
+                repo_id="Jenthe/ECAPA2",
+                filename="ecapa2.pt",
+                cache_dir="../models/ECAPA2",
             )
+            # For faster, 16-bit half-precision CUDA inference (recommended):
             ecapa2_model = torch.jit.load(model_file, map_location="cpu")
+            ecapa2_model.half()
             ecapa2_model.to("mps")
             return ecapa2_model
         case _:

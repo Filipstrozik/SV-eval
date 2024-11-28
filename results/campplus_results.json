@@ -1,0 +1,21 @@
+{
+  "config": {
+    "dataset_path": "../data/voxceleb2_wav",
+    "model_name": "campplus",
+    "max_len": 80000,
+    "batch_size": 32,
+    "embeddings_output_path": "../embeds/",
+    "results_output_path": "../results/"
+  },
+  "EER": 0.10130148362449085,
+  "EER_threshold": 0.7317317317317317,
+  "minDCF": 0.007403700225121411,
+  "best_threshold": 0.8352766427191887,
+  "metrics": {
+    "confusion_matrix": { "tn": 2700837, "fp": 302863, "fn": 6142, "tp": 54208 },
+    "accuracy": 0.8991514498784289,
+    "precision": 0.15181294476448662,
+    "recall": 0.8982270091135045,
+    "f1_score": 0.25972818808828496
+  }
+}
