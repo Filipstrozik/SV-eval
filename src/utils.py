@@ -177,7 +177,7 @@ class AudioDatasetFBank(Dataset):
 def load_model(model_name):
     match model_name:
         case "campplus":
-            campplus_model = wespeaker.load_model(f"../models/voxceleb_CAM++")
+            campplus_model = wespeaker.load_model_local("../models/voxceleb_CAM++")
             campplus_model.set_device("mps")
             return campplus_model
         case "ecapa_tdnn":
@@ -310,9 +310,15 @@ def calculate_cosine_similarity_matrix(df):
     return scores, class_labels
 
 
-def calculate_eer(scores, class_labels):
+def calculate_eer(scores, class_labels, threshold=None):
     genuine_scores = scores[class_labels]
     impostor_scores = scores[~class_labels]
+
+    if threshold is not None:
+        FAR = np.mean(np.array(impostor_scores) >= threshold)
+        FRR = np.mean(np.array(genuine_scores) < threshold)
+        EER = (FAR + FRR) / 2
+        return EER, threshold, [threshold], [FAR], [FRR]
 
     thresholds = np.linspace(0, 1, 1000)  # Cosine similarity ranges from -1 to 1
     FAR = []  # False Acceptance Rate

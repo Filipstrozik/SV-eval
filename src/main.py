@@ -1,5 +1,6 @@
 import json
 from matplotlib.pylab import f
+from torch import threshold
 from torch.utils.data import DataLoader
 from utils import *
 import yaml
@@ -23,6 +24,7 @@ max_len = config["max_len"]
 batch_size = config["batch_size"]
 fbank_processing = config["fbank_processing"]
 device = config["device"]
+threshold = config.get("threshold", None)
 
 
 print("Scanning dataset...")
@@ -55,6 +57,7 @@ except Exception as e:
         embeddings = evaluate_torch_model(model, audio_loader, device="cpu")
 
 print("Saving embeddings...")
+os.makedirs(embeddings_output_path, exist_ok=True)
 save_embeddings_to_csv(
     df, embeddings, f"{embeddings_output_path}/{model_name}_embeddings.csv"
 )
@@ -63,8 +66,14 @@ print("Done!")
 df = pd.read_csv(f"{embeddings_output_path}/{model_name}_embeddings.csv")
 df = preprocess_embeddings_df(df)
 
+if threshold is None:
+    print("Calculating threshold...")
+else:
+    print(f"Using threshold: {threshold}")
 scores, class_labels = calculate_cosine_similarity_matrix(df)
-EER, EER_threshold, thresholds, FAR, FRR = calculate_eer(scores, class_labels)
+EER, EER_threshold, thresholds, FAR, FRR = calculate_eer(
+    scores, class_labels, threshold
+)
 print(f"EER: {EER} with threshold {EER_threshold}")
 
 # plot_frr_far(FAR, FRR, EER, EER_threshold, thresholds)
@@ -87,7 +96,7 @@ results = {
 }
 
 os.makedirs(results_output_path, exist_ok=True)
-with open(f"{results_output_path}{model_name}_results.json", "w") as file:
+with open(f"{results_output_path}/{model_name}_results.json", "w") as file:
     json.dump(results, file, cls=NumpyEncoder)
 
 print("Results saved to .json")
