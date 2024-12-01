@@ -1,0 +1,24 @@
+{
+  "config": {
+    "dataset_path": "../data/voxceleb2_wav_test",
+    "model_name": "redimnet",
+    "max_len": 54000,
+    "batch_size": 32,
+    "fbank_processing": false,
+    "embeddings_output_path": "../embeds/voxceleb2_wav_test",
+    "results_output_path": "../results/voxceleb2_wav_test",
+    "device": "mps",
+    "threshold": 0.6436436436436437
+  },
+  "EER": 0.02241461435342696,
+  "EER_threshold": 0.6436436436436437,
+  "minDCF": 0.0013283476614688336,
+  "best_threshold": 0.72134946303086,
+  "metrics": {
+    "confusion_matrix": { "tn": 2953160, "fp": 50540, "fn": 1690, "tp": 58660 },
+    "accuracy": 0.9829539335193617,
+    "precision": 0.5371794871794872,
+    "recall": 0.971996685998343,
+    "f1_score": 0.6919492774992627
+  }
+}
