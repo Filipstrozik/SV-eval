@@ -1,6 +1,7 @@
 /data/*
 /embeds/*
 /models/*
+!/models/configs/
 __pycache__/
 /*.py[cod]
 *$py.class

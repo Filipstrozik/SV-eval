@@ -1,0 +1,4 @@
+model_name: 'ecapa_tdnn'
+fbank_processing: True
+device: 'mps'
+threshold:

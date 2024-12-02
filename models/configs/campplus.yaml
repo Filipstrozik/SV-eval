@@ -1,0 +1,4 @@
+model_name: 'campplus'
+fbank_processing: True
+device: 'mps'
+threshold:
