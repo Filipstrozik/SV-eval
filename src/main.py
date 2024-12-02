@@ -1,34 +1,50 @@
 import json
 from matplotlib.pylab import f
-from torch import threshold
 from torch.utils.data import DataLoader
 from utils import *
 import yaml
 import os
+import argparse
 
 # Load configuration from config.yaml
 # Set current directory to the script's directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-config_path = "../config.yaml"
-with open(config_path, "r") as file:
-    config = yaml.safe_load(file)
+parser = argparse.ArgumentParser(description="Process some configurations.")
+parser.add_argument(
+    "--model_config",
+    type=str,
+    required=True,
+    help="Path to the model configuration file",
+)
+args = parser.parse_args()
+model_config_path = f"../models/configs/{args.model_config}.yaml"
+
+base_config_path = "../config.yaml"
+base_config = load_yaml(base_config_path)
+model_config = load_yaml(model_config_path)
+
+config = {**base_config, **model_config}
 
 print(f"Configuration: {config}")
-
-dataset_path = config["dataset_path"]
+dataset_name = config["dataset_name"]
+dataset_path = config["dataset_path"] + dataset_name
 model_name = config["model_name"]
-embeddings_output_path = config["embeddings_output_path"]
-results_output_path = config["results_output_path"]
+embeddings_output_path = config["embeddings_output_path"] + dataset_name
+results_output_path = config["results_output_path"] + dataset_name
 max_len = config["max_len"]
 batch_size = config["batch_size"]
 fbank_processing = config["fbank_processing"]
 device = config["device"]
 threshold = config.get("threshold", None)
-
+dataset_type = config.get("dataset_type", "voxceleb2")
 
 print("Scanning dataset...")
-df = scan_directory_voxceleb2(dataset_path)
+if dataset_type == "voxceleb2":
+    df = scan_directory_voxceleb2(dataset_path)
+else:
+    df = scan_directory_voxceleb1(dataset_path)
+
 
 print("Loading model...")
 model = load_model(model_name)

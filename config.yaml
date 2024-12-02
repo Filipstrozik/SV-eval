@@ -1,10 +1,7 @@
-dataset_path: '../data/voxceleb2_wav_test'
-# campplus, ecapa_tdnn, ecapa2, redimnet
-model_name: 'redimnet'
+dataset_name: 'vox1_test_wav'
+dataset_path: '../data/'
 max_len: 54_000 # 4 * 16000
 batch_size: 32
-fbank_processing: False
-embeddings_output_path: '../embeds/voxceleb2_wav_test'
-results_output_path: '../results/voxceleb2_wav_test'
-device: 'mps'
-threshold: 0.6436436436436437
+embeddings_output_path: '../embeds/'
+results_output_path: '../results/'
+dataset_type: 'voxceleb1'

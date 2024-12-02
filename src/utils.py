@@ -21,9 +21,25 @@ from sklearn.metrics import (
 import json
 from huggingface_hub import hf_hub_download
 import sys
+import yaml
 
 sys.path.append("./helper_libs")
 from redimnet.model import ReDimNetWrap
+
+
+# --- merge configs ---
+
+
+def load_yaml(file_path):
+    with open(file_path, "r") as file:
+        return yaml.safe_load(file)
+
+
+def merge_configs(base_config, model_config):
+    merged_config = base_config.copy()
+    merged_config.update(model_config)
+    return merged_config
+
 
 # --- Data scanning functions ---
 
