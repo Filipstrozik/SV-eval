@@ -35,6 +35,7 @@ results_output_path = config["results_output_path"] + dataset_name
 max_len = config["max_len"]
 batch_size = config["batch_size"]
 fbank_processing = config["fbank_processing"]
+audio_repeat = config["audio_repeat"]
 device = config["device"]
 threshold = config.get("threshold", None)
 dataset_type = config.get("dataset_type", "voxceleb2")
@@ -51,9 +52,9 @@ model = load_model(model_name)
 
 
 if fbank_processing:
-    audio_dataset = AudioDatasetFBank(df, max_len, model)
+    audio_dataset = AudioDatasetFBank(df, max_len, model, audio_repeat)
 else:
-    audio_dataset = AudioDataset(df, max_len)
+    audio_dataset = AudioDataset(df, max_len, audio_repeat)
 
 audio_loader = DataLoader(audio_dataset, batch_size=batch_size, shuffle=False)
 

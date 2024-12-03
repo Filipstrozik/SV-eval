@@ -1,7 +1,8 @@
-dataset_name: 'vox1_test_wav'
+dataset_name: 'voxceleb2_wav_eval'
 dataset_path: '../data/'
-max_len: 54_000 # 4 * 16000
+max_len: 128_000 # 4 * 16000
 batch_size: 32
 embeddings_output_path: '../embeds/'
 results_output_path: '../results/'
-dataset_type: 'voxceleb1'
+dataset_type: 'voxceleb2'
+audio_repeat: True

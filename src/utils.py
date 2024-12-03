@@ -137,13 +137,37 @@ def pad_or_cut_wave(data, max_len):
     return data
 
 
+def repeat_or_cut_wave(data, max_len):
+    """Repeat or cut a single wave to the specified length.
+
+    Args:
+        data: torch.Tensor (random len)
+        max_len: maximum length to repeat or cut the data
+
+    Returns:
+        torch.Tensor (repeated or cut to max_len)
+    """
+
+    data_len = data.shape[1]
+    if data_len < max_len:
+        repeats = max_len // data_len
+        remainder = max_len % data_len
+        data = torch.cat([data] * repeats, dim=1)
+        if remainder > 0:
+            data = torch.cat([data, data[:, :remainder]], dim=1)
+    else:
+        data = data[:, :max_len]
+    return data
+
+
 class AudioDataset(Dataset):
     # example use
     # max_len = 5 * 16000
     # audio_dataset = AudioDataset(df, max_len)
-    def __init__(self, dataframe, max_len) -> None:
+    def __init__(self, dataframe, max_len, repeat=True) -> None:
         self.dataframe = dataframe
         self.max_len = max_len
+        self.repeat = repeat
 
     def __len__(self) -> int:
         return len(self.dataframe)
@@ -155,7 +179,10 @@ class AudioDataset(Dataset):
         audio_path = self.dataframe.iloc[idx]["path"]
         waveform, sample_rate = torchaudio.load(audio_path)
 
-        waveform = pad_or_cut_wave(waveform, self.max_len)
+        if self.repeat:
+            waveform = repeat_or_cut_wave(waveform, self.max_len)
+        else:
+            waveform = pad_or_cut_wave(waveform, self.max_len)
 
         sample = {"path": audio_path, "waveform": waveform, "sample_rate": sample_rate}
 
@@ -164,10 +191,11 @@ class AudioDataset(Dataset):
 
 class AudioDatasetFBank(Dataset):
     # you need to provide model to compute fbank features
-    def __init__(self, dataframe, max_len, model):
+    def __init__(self, dataframe, max_len, model, repeat=True) -> None:
         self.dataframe = dataframe
         self.max_len = max_len
         self.model = model
+        self.repeat = repeat
 
     def __len__(self):
         return len(self.dataframe)
@@ -179,7 +207,10 @@ class AudioDatasetFBank(Dataset):
         audio_path = self.dataframe.iloc[idx]["path"]
         waveform, sample_rate = torchaudio.load(audio_path)
 
-        waveform = pad_or_cut_wave(waveform, self.max_len)
+        if self.repeat:
+            waveform = repeat_or_cut_wave(waveform, self.max_len)
+        else:
+            waveform = pad_or_cut_wave(waveform, self.max_len)
 
         # Extract fbank features
         fbank = self.model.compute_fbank(waveform)
