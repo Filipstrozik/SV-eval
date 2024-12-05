@@ -46,6 +46,7 @@ if dataset_type == "voxceleb2":
 else:
     df = scan_directory_voxceleb1(dataset_path)
 
+print(f"Number of rows in dataset: {len(df)}")
 
 print("Loading model...")
 model = load_model(model_name)

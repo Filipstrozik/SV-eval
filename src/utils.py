@@ -160,6 +160,85 @@ def repeat_or_cut_wave(data, max_len):
     return data
 
 
+def repeat_to_max_len(data, max_len):
+    """Repeat to a single wave to the specified length.
+
+    Args:
+        data: torch.Tensor (random len)
+        max_len: maximum length to repeat or cut the data
+
+    Returns:
+        torch.Tensor (repeated to max_len)
+    """
+    data_len = data.shape[1]
+    if data_len < max_len:
+        repeats = max_len // data_len
+        remainder = max_len % data_len
+        data = torch.cat([data] * repeats, dim=1)
+        if remainder > 0:
+            data = torch.cat([data, data[:, :remainder]], dim=1)
+    return data
+
+
+def allign_dataframe_durations_celeb2(df, window_size, new_dataset_dir):
+    if not os.path.exists(new_dataset_dir):
+        os.makedirs(new_dataset_dir)
+
+    new_data = []
+    for index, row in df.iterrows():
+        person_dir = os.path.join(new_dataset_dir, row["person_id"])
+        if not os.path.exists(person_dir):
+            os.makedirs(person_dir)
+
+        waveform, sample_rate = torchaudio.load(row["path"])
+        max_len = int(window_size * sample_rate)
+        waveform = repeat_to_max_len(waveform, max_len)
+        num_windows_float = row["duration"] / window_size
+        num_windows = int(row["duration"] // window_size)
+        for i in range(num_windows):
+            start_sample = int(i * window_size * sample_rate)
+            end_sample = int((i + 1) * window_size * sample_rate)
+            window_waveform = waveform[:, start_sample:end_sample]
+            new_path = os.path.join(
+                person_dir, f"{row['utterance_filename']}_window_{i}.wav"
+            )
+            torchaudio.save(new_path, window_waveform, sample_rate)
+            new_data.append(
+                [
+                    new_path,
+                    row["person_id"],
+                    row["utterance_filename"],
+                    row["embedding"],
+                    window_size,
+                ]
+            )
+
+        if num_windows_float > num_windows:
+            start_sample = int(num_windows * window_size * sample_rate)
+            end_sample = waveform.shape[1]
+            window_waveform = waveform[:, start_sample:end_sample]
+            window_waveform = repeat_to_max_len(window_waveform, max_len)
+            new_path = os.path.join(
+                person_dir, f"{row['utterance_filename']}_window_{num_windows}.wav"
+            )
+            torchaudio.save(new_path, window_waveform, sample_rate)
+            new_data.append(
+                [
+                    new_path,
+                    row["person_id"],
+                    row["utterance_filename"],
+                    row["embedding"],
+                    window_size,
+                ]
+            )
+
+    new_df = pd.DataFrame(
+        new_data,
+        columns=["path", "person_id", "utterance_filename", "embedding", "duration"],
+    )
+    return new_df
+
+
 class AudioDataset(Dataset):
     # example use
     # max_len = 5 * 16000
