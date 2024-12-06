@@ -21,6 +21,7 @@ from sklearn.metrics import (
 import json
 from huggingface_hub import hf_hub_download
 import sys
+from wespeaker.cli.speaker import Speaker
 import yaml
 
 sys.path.append("./helper_libs")
@@ -240,13 +241,15 @@ def allign_dataframe_durations_celeb2(df, window_size, new_dataset_dir):
 
 
 class AudioDataset(Dataset):
-    # example use
-    # max_len = 5 * 16000
-    # audio_dataset = AudioDataset(df, max_len)
-    def __init__(self, dataframe, max_len, repeat=True) -> None:
+
+    def __init__(
+        self, dataframe, max_len, repeat=False, model=None, fbank=False
+    ) -> None:
         self.dataframe = dataframe
         self.max_len = max_len
+        self.model = model
         self.repeat = repeat
+        self.fbank = fbank
 
     def __len__(self) -> int:
         return len(self.dataframe)
@@ -265,81 +268,98 @@ class AudioDataset(Dataset):
 
         sample = {"path": audio_path, "waveform": waveform, "sample_rate": sample_rate}
 
-        return sample
-
-
-class AudioDatasetFBank(Dataset):
-    # you need to provide model to compute fbank features
-    def __init__(self, dataframe, max_len, model, repeat=True) -> None:
-        self.dataframe = dataframe
-        self.max_len = max_len
-        self.model = model
-        self.repeat = repeat
-
-    def __len__(self):
-        return len(self.dataframe)
-
-    def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
-
-        audio_path = self.dataframe.iloc[idx]["path"]
-        waveform, sample_rate = torchaudio.load(audio_path)
-
-        if self.repeat:
-            waveform = repeat_or_cut_wave(waveform, self.max_len)
-        else:
-            waveform = pad_or_cut_wave(waveform, self.max_len)
-
-        # Extract fbank features
-        fbank = self.model.compute_fbank(waveform)
-
-        sample = {"path": audio_path, "fbank": fbank, "sample_rate": sample_rate}
+        if self.fbank and self.model:
+            fbank = self.model.compute_fbank(waveform)
+            sample["waveform"] = fbank
 
         return sample
 
 
-# loading models
-def load_model(model_name):
+def collate_audio_samples(batch):
+    paths = [item["path"] for item in batch]
+    waveforms = [item["waveform"] for item in batch]
+    return {"path": paths, "waveform": waveforms}
+
+
+# --- Model loading functions ---
+
+
+def load_campplus_model(device="mps") -> Speaker:
+    campplus_model = wespeaker.load_model_local("../models/voxceleb_CAM++")
+    campplus_model.set_device(device)
+    return campplus_model
+
+
+def load_ecapa_tdnn_model(device="mps") -> Speaker:
+    ecapa_tdnn = wespeaker.load_model_local("../models/voxceleb_ECAPA1024")
+    ecapa_tdnn.set_device(device)
+    return ecapa_tdnn
+
+
+def load_resnet34_model(device):
+    resnet34_model = wespeaker.load_model_local("../models/voxceleb_resnet34")
+    resnet34_model.set_device(device)
+    return resnet34_model
+
+
+def load_redimnet_model(device):
+    path = "../models/ReDimNet/b6-vox2-ptn.pt"
+    full_state_dict = torch.load(path)
+    model_config = full_state_dict["model_config"]
+    state_dict = full_state_dict["state_dict"]
+
+    # Create an instance of the model using the configuration
+    redimnet_model = ReDimNetWrap(**model_config)
+
+    # Load the state dictionary into the model
+    redimnet_model.load_state_dict(state_dict)
+
+    # Move the model to the desired device (e.g., 'mps' or 'cpu')
+    redimnet_model.to(device)
+    return redimnet_model
+
+
+def load_ecapa2_model(device):
+    model_file = hf_hub_download(
+        repo_id="Jenthe/ECAPA2",
+        filename="ecapa2.pt",
+        cache_dir="../models/ECAPA2",
+    )
+    # For faster, 16-bit half-precision CUDA inference (recommended):
+    ecapa2_model = torch.jit.load(model_file, map_location="cpu")
+    ecapa2_model.half()
+    ecapa2_model.to(device)
+    return ecapa2_model
+
+
+def load_model(model_name, device="mps") -> Speaker:
     match model_name:
         case "campplus":
-            campplus_model = wespeaker.load_model_local("../models/voxceleb_CAM++")
-            campplus_model.set_device("mps")
-            return campplus_model
+            return load_campplus_model(device)
         case "ecapa_tdnn":
-            ecapa_tdnn = wespeaker.load_model_local("../models/voxceleb_ECAPA1024")
-            ecapa_tdnn.set_device("mps")
-            return ecapa_tdnn
+            return load_ecapa_tdnn_model(device)
         case "resnet34":
-            resnet34_model = wespeaker.load_model_local("../models/voxceleb_resnet34")
-            resnet34_model.set_device("mps")
-            return resnet34_model
+            return load_resnet34_model(device)
         case "redimnet":
-            path = "../models/ReDimNet/b6-vox2-ptn.pt"
-            full_state_dict = torch.load(path)
-            model_config = full_state_dict["model_config"]
-            state_dict = full_state_dict["state_dict"]
-
-            # Create an instance of the model using the configuration
-            redimnet_model = ReDimNetWrap(**model_config)
-
-            # Load the state dictionary into the model
-            redimnet_model.load_state_dict(state_dict)
-
-            # Move the model to the desired device (e.g., 'mps' or 'cpu')
-            redimnet_model.to("mps")
-            return redimnet_model
+            return load_redimnet_model(device)
         case "ecapa2":
-            model_file = hf_hub_download(
-                repo_id="Jenthe/ECAPA2",
-                filename="ecapa2.pt",
-                cache_dir="../models/ECAPA2",
-            )
-            # For faster, 16-bit half-precision CUDA inference (recommended):
-            ecapa2_model = torch.jit.load(model_file, map_location="cpu")
-            ecapa2_model.half()
-            ecapa2_model.to("mps")
-            return ecapa2_model
+            return load_ecapa2_model(device)
+        case _:
+            raise ValueError(f"Model {model_name} not supported")
+
+
+def load_model_torch(model_name, device="mps") -> torch.nn.Module:
+    match model_name:
+        case "campplus":
+            return load_campplus_model(device).model
+        case "ecapa_tdnn":
+            return load_ecapa_tdnn_model(device).model
+        case "resnet34":
+            return load_resnet34_model(device).model
+        case "redimnet":
+            return load_redimnet_model(device)
+        case "ecapa2":
+            return load_ecapa2_model(device)
         case _:
             raise ValueError(f"Model {model_name} not supported")
 

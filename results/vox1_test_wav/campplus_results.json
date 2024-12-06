@@ -2,25 +2,26 @@
   "config": {
     "dataset_name": "vox1_test_wav",
     "dataset_path": "../data/",
-    "max_len": 54000,
+    "max_len": 128000,
     "batch_size": 32,
     "embeddings_output_path": "../embeds/",
     "results_output_path": "../results/",
     "dataset_type": "voxceleb1",
+    "audio_repeat": true,
     "model_name": "campplus",
     "fbank_processing": true,
     "device": "mps",
     "threshold": null
   },
-  "EER": 0.013889339299555421,
-  "EER_threshold": 0.6676676676676676,
-  "minDCF": 0.0019223081710102868,
-  "best_threshold": 0.7418452498910424,
+  "EER": 0.008490645959785399,
+  "EER_threshold": 0.6936936936936937,
+  "minDCF": 0.0012010533351766571,
+  "best_threshold": 0.7635161790761862,
   "metrics": {
-    "confusion_matrix": { "tn": 11339354, "fp": 157867, "fn": 5314, "tp": 372966 },
-    "accuracy": 0.9862590218299001,
-    "precision": 0.7026051507724652,
-    "recall": 0.9859522047160834,
-    "f1_score": 0.8205052617221401
+    "confusion_matrix": { "tn": 11398604, "fp": 98617, "fn": 3179, "tp": 375101 },
+    "accuracy": 0.9914280669085035,
+    "precision": 0.7918234054859642,
+    "recall": 0.9915961721476155,
+    "f1_score": 0.8805208462930664
   }
 }

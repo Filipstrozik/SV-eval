@@ -53,7 +53,7 @@ model = load_model(model_name)
 
 
 if fbank_processing:
-    audio_dataset = AudioDatasetFBank(df, max_len, model, audio_repeat)
+    audio_dataset = AudioDataset(df, max_len, audio_repeat, model, fbank_processing)
 else:
     audio_dataset = AudioDataset(df, max_len, audio_repeat)
 
