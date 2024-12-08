@@ -1,4 +1,4 @@
 model_name: 'ecapa2'
 fbank_processing: False
 device: 'mps'
-threshold:
+threshold: 0.6376376376376376

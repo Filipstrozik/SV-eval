@@ -373,7 +373,7 @@ def evaluate_wespeaker_fbank(we_speaker_model, dataloader):
     with torch.no_grad():
         for batch in tqdm(dataloader, desc="Evaluating"):
             utts = batch["path"]
-            features = batch["fbank"].float().to(we_speaker_model.device)
+            features = batch["waveform"].float().to(we_speaker_model.device)
             # Forward through model
             outputs = we_speaker_model.model(features)  # embed or (embed_a, embed_b)
             embeds = outputs[-1] if isinstance(outputs, tuple) else outputs
@@ -401,6 +401,16 @@ def evaluate_torch_model(model, dataloader, device):
                 all_embeddings[utt] = embed
 
     return all_embeddings
+
+
+def evaluate_model(model, dataloader, device):
+    # based on the model type "Speaker" or "torch.nn.Module" we evaluate the model
+    if isinstance(model, Speaker):
+        return evaluate_wespeaker_fbank(model, dataloader)
+    elif isinstance(model, torch.nn.Module):
+        return evaluate_torch_model(model, dataloader, device)
+    else:
+        raise ValueError("Model type not supported")
 
 
 # save embeddings to csv

@@ -1,24 +1,27 @@
 {
   "config": {
-    "dataset_path": "../data/voxceleb2_wav_eval",
-    "model_name": "ecapa_tdnn",
-    "max_len": 54000,
+    "dataset_name": "voxceleb2_wav_eval",
+    "dataset_path": "../data/",
+    "max_len": 64000,
     "batch_size": 32,
+    "embeddings_output_path": "../embeds/",
+    "results_output_path": "../results/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": true,
+    "model_name": "ecapa_tdnn",
     "fbank_processing": true,
-    "embeddings_output_path": "../embeds/voxceleb2_wav_eval",
-    "results_output_path": "../results/voxceleb2_wav_eval",
     "device": "mps",
     "threshold": null
   },
-  "EER": 0.019216400120597818,
-  "EER_threshold": 0.6416416416416416,
-  "minDCF": 0.0020902182220015196,
-  "best_threshold": 0.72123239658497,
+  "EER": 0.01655475201685492,
+  "EER_threshold": 0.6486486486486487,
+  "minDCF": 0.0017611585625659535,
+  "best_threshold": 0.7283285341940604,
   "metrics": {
-    "confusion_matrix": { "tn": 2972948, "fp": 57702, "fn": 1177, "tp": 59514 },
-    "accuracy": 0.9809535732227534,
-    "precision": 0.5077293202293203,
-    "recall": 0.9806066797383467,
-    "f1_score": 0.669046187052786
+    "confusion_matrix": { "tn": 2979793, "fp": 50857, "fn": 991, "tp": 59700 },
+    "accuracy": 0.983227990700476,
+    "precision": 0.5399929448157964,
+    "recall": 0.9836713845545468,
+    "f1_score": 0.697234420256003
   }
 }

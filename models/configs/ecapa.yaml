@@ -1,4 +1,4 @@
 model_name: 'ecapa_tdnn'
 fbank_processing: True
 device: 'mps'
-threshold:
+threshold: 0.6486486486486487
