@@ -72,16 +72,15 @@ except Exception as e:
     model.to("cpu")
     embeddings = evaluate_torch_model(model, audio_loader, device="cpu")
 
+df = map_embeddings_to_df(df, embeddings)
+
 logging.info("Saving embeddings to csv...")
 
 os.makedirs(embeddings_output_path, exist_ok=True)
-save_embeddings_to_csv(
-    df, embeddings, f"{embeddings_output_path}/{model_name}_embeddings.csv"
-)
+embeddings_output_path_file = f"{embeddings_output_path}/{model_name}_embeddings"
+save_embeddings_to_parquet(df, embeddings_output_path_file)
+logging.info(f"Embeddings saved to {embeddings_output_path_file}")
 
-
-df = pd.read_csv(f"{embeddings_output_path}/{model_name}_embeddings.csv")
-df = preprocess_embeddings_df(df)
 
 if threshold is None:
     logging.info("Calculating threshold...")

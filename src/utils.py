@@ -57,10 +57,7 @@ def scan_directory_voxceleb1(path) -> pd.DataFrame:
                     for file in os.listdir(utterance_path):
                         file_path = os.path.join(utterance_path, file)
                         if os.path.isfile(file_path):
-                            embedding = "embedding_placeholder"
-                            data.append(
-                                [file_path, person_id, utterance_env, file, embedding]
-                            )
+                            data.append([file_path, person_id, utterance_env, file])
 
     df = pd.DataFrame(
         data,
@@ -69,7 +66,6 @@ def scan_directory_voxceleb1(path) -> pd.DataFrame:
             "person_id",
             "utterance_env",
             "utterance_filename",
-            "embedding",
         ],
     )
     return df
@@ -84,12 +80,9 @@ def scan_directory_voxceleb2(test_dir) -> pd.DataFrame:
             for file in os.listdir(person_path):
                 file_path = os.path.join(person_path, file)
                 if os.path.isfile(file_path):
-                    embedding = "embedding_placeholder"
-                    data.append([file_path, person_id, file, embedding])
+                    data.append([file_path, person_id, file])
 
-    df = pd.DataFrame(
-        data, columns=["path", "person_id", "utterance_filename", "embedding"]
-    )
+    df = pd.DataFrame(data, columns=["path", "person_id", "utterance_filename"])
     return df
 
 
@@ -416,13 +409,35 @@ def evaluate_model(model, dataloader, device):
 # save embeddings to csv
 
 
-def save_embeddings_to_csv(df, embeddings, output_path):
-    df["embedding"] = df["path"].map(embeddings)
+def map_embeddings_to_df(df, embeddings):
+    embeddings_df = pd.DataFrame(
+        list(embeddings.items()), columns=["path", "embedding"]
+    )
+    df_with_embeddings = df.merge(embeddings_df, on="path")
+    return df_with_embeddings
 
+
+def save_embeddings_to_csv(df, output_path):
     df.to_csv(output_path, index=False)
 
 
-# --- Evaluation metrics ---
+def save_embeddings_to_parquet(df, output_path):
+    extension = ".parquet"
+    full_path = output_path + extension
+    df.to_parquet(full_path, index=False, engine="pyarrow", compression="snappy")
+
+
+def read_embeddings_from_parquet(embeddings_path):
+    extension = ".parquet"
+    full_path = embeddings_path + extension
+    df = pd.read_parquet(full_path, engine="pyarrow")
+    return df
+
+
+def read_embeddings_from_csv(embeddings_path):
+    df = pd.read_csv(embeddings_path)
+    df = preprocess_embeddings_df(df)
+    return df
 
 
 def preprocess_embeddings_df(df):
@@ -430,6 +445,9 @@ def preprocess_embeddings_df(df):
         lambda x: np.array(x.strip("[]").split(), dtype=float)
     )
     return df
+
+
+# --- Evaluation metrics ---
 
 
 def cosine_similarity(e1, e2):
