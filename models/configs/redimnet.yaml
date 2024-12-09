@@ -1,4 +1,4 @@
 model_name: 'redimnet'
 fbank_processing: False
 device: 'mps'
-threshold: 0.6486486486486487
+threshold: 0.6506506506506506

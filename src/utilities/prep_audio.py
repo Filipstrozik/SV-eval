@@ -37,7 +37,9 @@ def process_wav_to_stack(
     step_length = step * sample_rate
 
     if num_samples < segment_length:
-        raise ValueError("The audio waveform is too short to create even one segment")
+        raise ValueError(
+            f"The audio waveform is too short to create even one segment of length {num_samples}, expected at least {segment_length}"
+        )
 
     audio_segments = [
         audio_waveform[:, i * step_length : i * step_length + segment_length]

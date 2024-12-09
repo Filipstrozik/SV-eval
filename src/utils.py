@@ -409,7 +409,14 @@ def evaluate_model(model, dataloader, device):
 # save embeddings to csv
 
 
-def map_embeddings_to_df(df, embeddings):
+def map_embeddings_to_df(df, embeddings, windowed=False):
+    if windowed:
+        df["video_id"] = df["utterance_filename"].apply(lambda x: x.split("_")[0])
+        df["frame_id"] = df["utterance_filename"].apply(
+            lambda x: x.split("_")[2].replace(".wav", "")
+        )
+        df.drop(columns=["utterance_filename"], inplace=True)
+
     embeddings_df = pd.DataFrame(
         list(embeddings.items()), columns=["path", "embedding"]
     )

@@ -1,3 +1,4 @@
+from curses import window
 import json
 from math import log
 from matplotlib.pylab import f
@@ -44,6 +45,7 @@ audio_repeat = config["audio_repeat"]
 device = config["device"]
 threshold = config.get("threshold", None)
 dataset_type = config.get("dataset_type", "voxceleb2")
+windowed = config.get("windowed", False)
 
 logging.info(f"Dataset: {dataset_name}")
 
@@ -72,7 +74,7 @@ except Exception as e:
     model.to("cpu")
     embeddings = evaluate_torch_model(model, audio_loader, device="cpu")
 
-df = map_embeddings_to_df(df, embeddings)
+df = map_embeddings_to_df(df, embeddings, windowed=windowed)
 
 logging.info("Saving embeddings to csv...")
 
