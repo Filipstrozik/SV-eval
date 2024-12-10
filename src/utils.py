@@ -268,6 +268,32 @@ class AudioDataset(Dataset):
         return sample
 
 
+class VariableLengthAudioDataset(Dataset):
+
+    def __init__(self, dataframe, model=None, fbank=False):
+        self.dataframe = dataframe
+        self.model = model
+        self.fbank = fbank
+
+    def __len__(self):
+        return len(self.dataframe)
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        audio_path = self.dataframe.iloc[idx]["path"]
+        waveform, sample_rate = torchaudio.load(audio_path)
+
+        sample = {"path": audio_path, "waveform": waveform, "sample_rate": sample_rate}
+
+        if self.fbank and self.model:
+            fbank = self.model.compute_fbank(waveform)
+            sample["waveform"] = fbank
+
+        return sample
+
+
 def collate_audio_samples(batch):
     paths = [item["path"] for item in batch]
     waveforms = [item["waveform"] for item in batch]
@@ -379,6 +405,25 @@ def evaluate_wespeaker_fbank(we_speaker_model, dataloader):
     return all_embeddings
 
 
+def evaluate_wespeaker_fbank_various(we_speaker_model, dataloader):
+    all_embeddings = {}
+    we_speaker_model.model.eval()
+    with torch.no_grad():
+        for batch in tqdm(dataloader, desc="Evaluating"):
+            utts = batch["path"]
+            waveforms = batch["waveform"]
+
+            for utt, waveform in zip(utts, waveforms):
+                waveform = (
+                    waveform.float().to(we_speaker_model.device).unsqueeze(0)
+                )  # Add batch dimension
+                embed = we_speaker_model.model(waveform).cpu().numpy().squeeze(0)
+                # Remove batch dimension
+                all_embeddings[utt] = embed
+
+    return all_embeddings
+
+
 def evaluate_torch_model(model, dataloader, device):
     all_embeddings = {}
     model.eval()
@@ -396,12 +441,40 @@ def evaluate_torch_model(model, dataloader, device):
     return all_embeddings
 
 
+def evaluate_torch_model_various(model, dataloader, device):
+    all_embeddings = {}
+    model.eval()
+    with torch.no_grad():
+        for batch in tqdm(dataloader, desc="Evaluating"):
+            utts = batch["path"]
+            waveforms = batch["waveform"]
+
+            for utt, waveform in zip(utts, waveforms):
+                waveform = (
+                    waveform.float().to(device).unsqueeze(0)
+                )  # Add batch dimension
+                embed = model.forward(waveform).cpu().numpy().squeeze(0)
+                # Remove batch dimension
+                all_embeddings[utt] = embed
+
+    return all_embeddings
+
+
 def evaluate_model(model, dataloader, device):
     # based on the model type "Speaker" or "torch.nn.Module" we evaluate the model
     if isinstance(model, Speaker):
         return evaluate_wespeaker_fbank(model, dataloader)
     elif isinstance(model, torch.nn.Module):
         return evaluate_torch_model(model, dataloader, device)
+    else:
+        raise ValueError("Model type not supported")
+
+
+def evaluate_model_various(model, dataloader, device):
+    if isinstance(model, Speaker):
+        return evaluate_wespeaker_fbank_various(model, dataloader)
+    elif isinstance(model, torch.nn.Module):
+        return evaluate_torch_model_various(model, dataloader, device)
     else:
         raise ValueError("Model type not supported")
 
@@ -603,6 +676,8 @@ def evaluate_metrics(scores, class_labels, threshold):
         metrics_dict: dict, containing confusion matrix and metrics.
     """
     # Generate predictions based on the threshold
+    scores = np.asarray(scores)
+    class_labels = np.asarray(class_labels)
     predictions = scores >= threshold  # 1 for positive, 0 for negative
 
     # Compute confusion matrix

@@ -1,9 +1,15 @@
-dataset_name: 'voxceleb2_test_segments'
+dataset_name: 'vox1_test_wav'
 dataset_path: '../data/'
-max_len: 64_000 # 4 * 16000
-batch_size: 32
+
+# max_len
+#   set 0 if full length of audio is to be used, unforunately batching is broken for variable length audio and it is inefficient to use full length audio.
+#   set to a value greater than 0 to use fixed length audio, audio will be repeated or cut to this length. pass in samples eq 16000 for 1 second audio.
+max_len: 0
+# batch_size
+
+batch_size: 256
 embeddings_output_path: '../embeds/'
 results_output_path: '../results/'
-dataset_type: 'voxceleb2'
+dataset_type: 'voxceleb1'
 audio_repeat: True
-windowed: True
+windowed: False

@@ -1,6 +1,8 @@
-from curses import window
+import datetime
+from email.mime import audio
 import json
 from math import log
+import time
 from matplotlib.pylab import f
 from torch.utils.data import DataLoader
 from utils import *
@@ -15,7 +17,7 @@ logging.basicConfig(
 # Load configuration from config.yaml
 # Set current directory to the script's directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
+start_time = time.time()
 parser = argparse.ArgumentParser(description="Process some configurations.")
 parser.add_argument(
     "--model_config",
@@ -55,24 +57,32 @@ else:
     df = scan_directory_voxceleb1(dataset_path)
 
 logging.info(f"Number of rows in dataset: {len(df)}")
-model = load_model(model_name)
-
-
-if fbank_processing:
-    audio_dataset = AudioDataset(df, max_len, audio_repeat, model, fbank_processing)
-else:
-    audio_dataset = AudioDataset(df, max_len, audio_repeat)
-
-audio_loader = DataLoader(audio_dataset, batch_size=batch_size, shuffle=False)
-
+model = load_model(model_name, device=device)
 logging.info(f"Model: {model_name}")
 
-try:
-    embeddings = evaluate_model(model, audio_loader, device=device)
-except Exception as e:
-    print(f"Error occurred: {e}. Moving model to CPU and evaluating again.")
-    model.to("cpu")
-    embeddings = evaluate_torch_model(model, audio_loader, device="cpu")
+if max_len == 0:
+    audio_dataset = VariableLengthAudioDataset(df, model, fbank_processing)
+    dataloader = DataLoader(
+        audio_dataset,
+        batch_size=batch_size,
+        collate_fn=collate_audio_samples,
+        shuffle=False,
+    )
+    try:
+        embeddings = evaluate_model_various(model, dataloader, device=device)
+    except Exception as e:
+        print(f"Error occurred: {e}. Moving model to CPU and evaluating again.")
+        model.to("cpu")
+        embeddings = evaluate_torch_model_various(model, dataloader, device="cpu")
+else:
+    audio_dataset = AudioDataset(df, max_len, audio_repeat, model, fbank_processing)
+    audio_loader = DataLoader(audio_dataset, batch_size=batch_size, shuffle=False)
+    try:
+        embeddings = evaluate_model(model, audio_loader, device=device)
+    except Exception as e:
+        print(f"Error occurred: {e}. Moving model to CPU and evaluating again.")
+        model.to("cpu")
+        embeddings = evaluate_torch_model(model, audio_loader, device="cpu")
 
 df = map_embeddings_to_df(df, embeddings, windowed=windowed)
 
@@ -118,3 +128,7 @@ with open(f"{results_output_path}/{model_name}_results.json", "w") as file:
     json.dump(results, file, cls=NumpyEncoder)
 
 logging.info("Results saved to .json")
+
+total_time = time.time() - start_time
+total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+print(f"Elapsed time {total_time_str}")
