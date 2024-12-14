@@ -2,25 +2,27 @@
   "config": {
     "dataset_name": "vox1_test_wav",
     "dataset_path": "../data/",
-    "max_len": 54000,
-    "batch_size": 32,
+    "max_len": 0,
+    "batch_size": 256,
     "embeddings_output_path": "../embeds/",
     "results_output_path": "../results/",
     "dataset_type": "voxceleb1",
+    "audio_repeat": true,
+    "windowed": false,
     "model_name": "redimnet",
     "fbank_processing": false,
-    "device": "mps",
+    "device": "cuda:0",
     "threshold": null
   },
-  "EER": 0.009801399764417549,
-  "EER_threshold": 0.6716716716716716,
-  "minDCF": 0.0012009409068789762,
-  "best_threshold": 0.7374881183778919,
+  "EER": 0.005854135477534906,
+  "EER_threshold": 0.6956956956956957,
+  "minDCF": 0.0006255430057455543,
+  "best_threshold": 0.757551833584502,
   "metrics": {
-    "confusion_matrix": { "tn": 11382992, "fp": 114229, "fn": 3657, "tp": 374623 },
-    "accuracy": 0.9900731767021871,
-    "precision": 0.7663321414252167,
-    "recall": 0.9903325578936237,
-    "f1_score": 0.8640506866313318
+    "confusion_matrix": { "tn": 11429170, "fp": 68051, "fn": 2190, "tp": 376090 },
+    "accuracy": 0.9940852179625937,
+    "precision": 0.8467806394816061,
+    "recall": 0.9942106376229248,
+    "f1_score": 0.9145924046200182
   }
 }

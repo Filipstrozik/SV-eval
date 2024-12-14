@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox2_eval",
+    "dataset_path": "../data/",
+    "max_len": 0,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/",
+    "results_output_path": "../results/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": false,
+    "calculate_only_embeddings": false,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.013937491097837092,
+  "EER_threshold": 0.6626626626626626,
+  "minDCF": 0.001263881755125962,
+  "best_threshold": 0.7499129016836126,
+  "metrics": {
+    "confusion_matrix": { "tn": 2988666, "fp": 41984, "fn": 851, "tp": 59840 },
+    "accuracy": 0.9861435538816326,
+    "precision": 0.5876807039597737,
+    "recall": 0.9859781516205038,
+    "f1_score": 0.7364243300618405
+  }
+}

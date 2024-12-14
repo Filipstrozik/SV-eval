@@ -1,4 +1,4 @@
 model_name: 'redimnet'
 fbank_processing: False
-device: 'mps'
-threshold: 0.6506506506506506
+device: 'cuda:0'
+threshold: 0.6576576576576576

@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox2_test",
+    "dataset_path": "../data/",
+    "max_len": 0,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/",
+    "results_output_path": "../results/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": false,
+    "calculate_only_embeddings": false,
+    "model_name": "ecapa2",
+    "fbank_processing": false,
+    "device": "cuda:0",
+    "threshold": 0.6476476476476476
+  },
+  "EER": 0.02002548872408371,
+  "EER_threshold": 0.6476476476476476,
+  "minDCF": 0.0008801758885664875,
+  "best_threshold": 0.73427090630517,
+  "metrics": {
+    "confusion_matrix": { "tn": 2970001, "fp": 33699, "fn": 1740, "tp": 58610 },
+    "accuracy": 0.9884339354775542,
+    "precision": 0.6349326717871496,
+    "recall": 0.9711681855840928,
+    "f1_score": 0.7678551542981417
+  }
+}

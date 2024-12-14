@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox2_test",
+    "dataset_path": "../data/",
+    "max_len": 0,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/",
+    "results_output_path": "../results/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": false,
+    "calculate_only_embeddings": false,
+    "model_name": "redimnet",
+    "fbank_processing": false,
+    "device": "cuda:0",
+    "threshold": 0.6576576576576576
+  },
+  "EER": 0.019771741888401157,
+  "EER_threshold": 0.6576576576576576,
+  "minDCF": 0.0009127689988754272,
+  "best_threshold": 0.739824467951113,
+  "metrics": {
+    "confusion_matrix": { "tn": 2964856, "fp": 38844, "fn": 1606, "tp": 58744 },
+    "accuracy": 0.9867985183009416,
+    "precision": 0.6019592572857319,
+    "recall": 0.9733885666942833,
+    "f1_score": 0.7438868416720485
+  }
+}

@@ -2,25 +2,27 @@
   "config": {
     "dataset_name": "vox1_test_wav",
     "dataset_path": "../data/",
-    "max_len": 54000,
-    "batch_size": 32,
+    "max_len": 0,
+    "batch_size": 256,
     "embeddings_output_path": "../embeds/",
     "results_output_path": "../results/",
     "dataset_type": "voxceleb1",
+    "audio_repeat": true,
+    "windowed": false,
     "model_name": "ecapa2",
     "fbank_processing": false,
-    "device": "mps",
+    "device": "cuda:0",
     "threshold": null
   },
-  "EER": 0.010131900630067947,
-  "EER_threshold": 0.6586586586586587,
-  "minDCF": 0.0011582553503991853,
-  "best_threshold": 0.7226234637163542,
+  "EER": 0.005399799926169794,
+  "EER_threshold": 0.6846846846846847,
+  "minDCF": 0.000521145928189399,
+  "best_threshold": 0.7444860239525337,
   "metrics": {
-    "confusion_matrix": { "tn": 11381471, "fp": 115750, "fn": 3857, "tp": 374423 },
-    "accuracy": 0.9899282565005046,
-    "precision": 0.7638588824761869,
-    "recall": 0.9898038490007401,
-    "f1_score": 0.8622757938541291
+    "confusion_matrix": { "tn": 11434967, "fp": 62254, "fn": 2037, "tp": 376243 },
+    "accuracy": 0.9945862494559177,
+    "precision": 0.858028675224688,
+    "recall": 0.9946150999259807,
+    "f1_score": 0.9212869608228439
   }
 }

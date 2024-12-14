@@ -48,6 +48,7 @@ device = config["device"]
 threshold = config.get("threshold", None)
 dataset_type = config.get("dataset_type", "voxceleb2")
 windowed = config.get("windowed", False)
+calculate_only_embeddings = config.get("calculate_only_embeddings", False)
 
 logging.info(f"Dataset: {dataset_name}")
 
@@ -61,6 +62,7 @@ model = load_model(model_name, device=device)
 logging.info(f"Model: {model_name}")
 
 if max_len == 0:
+    logging.info(f"Dataset: Variable length")
     audio_dataset = VariableLengthAudioDataset(df, model, fbank_processing)
     dataloader = DataLoader(
         audio_dataset,
@@ -75,6 +77,7 @@ if max_len == 0:
         model.to("cpu")
         embeddings = evaluate_torch_model_various(model, dataloader, device="cpu")
 else:
+    logging.info(f"Dataset: Fixed length")
     audio_dataset = AudioDataset(df, max_len, audio_repeat, model, fbank_processing)
     audio_loader = DataLoader(audio_dataset, batch_size=batch_size, shuffle=False)
     try:
@@ -86,14 +89,20 @@ else:
 
 df = map_embeddings_to_df(df, embeddings, windowed=windowed)
 
-logging.info("Saving embeddings to csv...")
+logging.info("Saving embeddings to parquet...")
 
 os.makedirs(embeddings_output_path, exist_ok=True)
 embeddings_output_path_file = f"{embeddings_output_path}/{model_name}_embeddings"
 save_embeddings_to_parquet(df, embeddings_output_path_file)
 logging.info(f"Embeddings saved to {embeddings_output_path_file}")
 
+if calculate_only_embeddings:
+    total_time = time.time() - start_time
+    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+    print(f"Elapsed time {total_time_str}")
+    exit()
 
+# Calculate EER and minDCF
 if threshold is None:
     logging.info("Calculating threshold...")
 else:

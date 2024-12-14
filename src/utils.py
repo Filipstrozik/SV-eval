@@ -247,7 +247,7 @@ class AudioDataset(Dataset):
     def __len__(self) -> int:
         return len(self.dataframe)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx):  # -> dict[str, Any]:
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
