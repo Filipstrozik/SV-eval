@@ -3,6 +3,8 @@ import torch
 from pathlib import Path
 import torchaudio
 
+from src.utils import repeat_to_max_len
+
 
 def process_wav_to_stack(
     audio_waveform: torch.Tensor,
@@ -37,9 +39,16 @@ def process_wav_to_stack(
     step_length = step * sample_rate
 
     if num_samples < segment_length:
-        raise ValueError(
-            f"The audio waveform is too short to create even one segment of length {num_samples}, expected at least {segment_length}"
-        )
+        remainder = segment_length - num_samples
+        # if remainder is less then 0.5 seconds, repeat it to segment length
+        if remainder < 0.5 * sample_rate:
+            waveform = repeat_to_max_len(audio_waveform, segment_length)
+            audio_waveform = waveform
+            num_samples = audio_waveform.shape[1]  # update num_samples
+        else:
+            raise ValueError(
+                f"The audio waveform is too short to create even one segment of length {length}, expected at least {segment_length}"
+            )
 
     audio_segments = [
         audio_waveform[:, i * step_length : i * step_length + segment_length]
