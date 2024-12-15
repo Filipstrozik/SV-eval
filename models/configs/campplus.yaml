@@ -1,4 +1,4 @@
 model_name: 'campplus'
 fbank_processing: True
 device: 'cuda:0'
-threshold: 0.6626626626626626
+threshold:

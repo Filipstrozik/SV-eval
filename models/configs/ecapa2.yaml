@@ -1,4 +1,4 @@
 model_name: 'ecapa2'
 fbank_processing: False
 device: 'cuda:0'
-threshold: 0.6476476476476476
+threshold:
