@@ -710,3 +710,109 @@ class NumpyEncoder(json.JSONEncoder):
         elif isinstance(obj, np.ndarray):
             return obj.tolist()
         return super(NumpyEncoder, self).default(obj)
+
+
+# --- Adding Noise to the data ---
+
+
+def add_scaled_noise_rms(
+    signal: np.ndarray, intensity=0.5, noise_type="gaussian", log_metrics=False
+) -> np.ndarray:
+    rms_signal = np.sqrt(np.mean(signal**2))
+    rms_noise = intensity * rms_signal
+
+    match noise_type:
+        case "gaussian":
+            noise = np.random.normal(0, rms_noise, signal.shape)
+        case "rayleigh":
+            sigma = rms_noise / np.sqrt(2 - np.pi / 2)
+            noise = np.random.rayleigh(sigma, signal.shape)
+            noise = noise - np.mean(noise)
+            signs = np.sign(signal)
+            noise = noise * rms_noise / np.sqrt(np.mean(noise**2))
+            noise = noise * signs
+        case "poisson":
+            lambda_vals = np.abs(signal) * rms_noise
+            noise = np.random.poisson(lambda_vals, signal.shape) - lambda_vals
+            noise = noise - np.mean(noise)
+            signs = np.sign(signal)
+            noise = noise * rms_noise / np.sqrt(np.mean(noise**2))
+            noise = noise * signs
+        case _:
+            raise ValueError("Nieobsługiwany typ szumu.")
+
+    if log_metrics:
+        rms_actual_noise = np.sqrt(np.mean(noise**2))
+        snr = (
+            20 * np.log10(rms_signal / rms_actual_noise)
+            if rms_actual_noise > 0
+            else float("inf")
+        )
+
+        print(f"RMS Signal: {rms_signal:.4f}")
+        print(f"RMS Noise: {rms_actual_noise:.4f}")
+        print(f"SNR: {snr:.2f} dB")
+
+    return signal + noise
+
+
+def add_scaled_noise_snr(
+    signal: np.ndarray, target_snr: float, noise_type="gaussian", log_metrics=False
+) -> np.ndarray:
+    rms_signal = np.sqrt(np.mean(signal**2))
+    snr_linear = 10 ** (target_snr / 20)
+    rms_noise = rms_signal / snr_linear
+
+    match noise_type:
+        case "gaussian":
+            noise = np.random.normal(0, rms_noise, signal.shape)
+        case "rayleigh":
+            sigma = rms_noise / np.sqrt(2 - np.pi / 2)
+            noise = np.random.rayleigh(sigma, signal.shape)
+            noise = noise - np.mean(noise)
+            signs = np.sign(signal)
+            noise = noise * rms_noise / np.sqrt(np.mean(noise**2))
+            noise = noise * signs
+        case "poisson":
+            lambda_vals = np.abs(signal) * rms_noise
+            noise = np.random.poisson(lambda_vals, signal.shape) - lambda_vals
+            noise = noise - np.mean(noise)
+            signs = np.sign(signal)
+            noise = noise * rms_noise / np.sqrt(np.mean(noise**2))
+            noise = noise * signs
+        case _:
+            raise ValueError("Unsupported noise type.")
+
+    if log_metrics:
+        rms_actual_noise = np.sqrt(np.mean(noise**2))
+        snr = (
+            20 * np.log10(rms_signal / rms_actual_noise)
+            if rms_actual_noise > 0
+            else float("inf")
+        )
+
+        # Print RMS and SNR
+        print(f"RMS Signal: {rms_signal:.4f}")
+        print(f"RMS Noise: {rms_actual_noise:.4f}")
+        print(f"SNR: {snr:.2f} dB")
+
+    return signal + noise
+
+
+def plot_waveform(waveform):
+    plt.figure(figsize=(10, 4))
+    plt.plot(waveform[0])
+    plt.title("Audio Signal")
+    plt.xlabel("Sample Index")
+    plt.ylabel("Amplitude")
+    plt.show()
+
+
+def plot_spectrogram(waveform, sample_rate):
+    plt.figure(figsize=(10, 4))
+    plt.specgram(waveform[0], Fs=sample_rate, scale="default", mode="magnitude")
+    plt.title("Spectrogram")
+    plt.xlabel("Time")
+    plt.ylabel("Frequency")
+    plt.colorbar()
+    plt.show()
