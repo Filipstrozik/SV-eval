@@ -1,5 +1,5 @@
-dataset_name: 'vox1_test_segments_snr_5_noisy_poisson'
-dataset_path: '../data/noisy/poisson/'
+dataset_name: 'vox1_test_segments_snr_15_noisy_rayleigh'
+dataset_path: '../data/noisy/rayleigh/'
 
 # max_len
 #   set 0 if full length of audio is to be used, unforunately batching is broken for variable length audio and it is inefficient to use full length audio.
@@ -9,8 +9,8 @@ max_len: 64_000
 # batch_size
 
 batch_size: 64
-embeddings_output_path: '../embeds/noisy/poisson/'
-results_output_path: '../results/noisy/poisson/'
+embeddings_output_path: '../embeds/noisy/rayleigh/'
+results_output_path: '../results/noisy/rayleigh/'
 dataset_type: 'voxceleb2'
 audio_repeat: False
 windowed: True
