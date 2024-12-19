@@ -1,4 +1,4 @@
-dataset_name: 'vox1_test_segments_snr_15_noisy_rayleigh'
+dataset_name: 'vox1_test_segments_snr_20_noisy_rayleigh'
 dataset_path: '../data/noisy/rayleigh/'
 
 # max_len

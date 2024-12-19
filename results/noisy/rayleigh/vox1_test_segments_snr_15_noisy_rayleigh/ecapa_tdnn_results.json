@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_segments_snr_15_noisy_rayleigh",
+    "dataset_path": "../data/noisy/rayleigh/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/noisy/rayleigh/",
+    "results_output_path": "../results/noisy/rayleigh/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.025877625924276816,
+  "EER_threshold": 0.6526526526526526,
+  "minDCF": 0.002906642828700961,
+  "best_threshold": 0.7403129278957188,
+  "metrics": {
+    "confusion_matrix": { "tn": 39104210, "fp": 1040310, "fn": 36927, "tp": 1392074 },
+    "accuracy": 0.9740883866920966,
+    "precision": 0.5723084841867073,
+    "recall": 0.9741588704276624,
+    "f1_score": 0.7210231561991358
+  }
+}
