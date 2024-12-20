@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_wav_snr_0_AirConditioner",
+    "dataset_path": "../data/noisy_bg/vox1_test_wav_bq_noise/AirConditioner/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/noisy_bg/vox1_test_wav_bq_noise/AirConditioner/",
+    "results_output_path": "../results/noisy_bg/vox1_test_wav_bq_noise/AirConditioner/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.042238621732376955,
+  "EER_threshold": 0.6346346346346347,
+  "minDCF": 0.0043687075863826485,
+  "best_threshold": 0.7357567350069681,
+  "metrics": {
+    "confusion_matrix": { "tn": 38466175, "fp": 1678345, "fn": 60975, "tp": 1368026 },
+    "accuracy": 0.9581627930913045,
+    "precision": 0.44906743137982863,
+    "recall": 0.9573303307695376,
+    "f1_score": 0.6113574469340203
+  }
+}
