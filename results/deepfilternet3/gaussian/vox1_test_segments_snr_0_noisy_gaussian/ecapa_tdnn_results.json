@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_segments_snr_0_noisy_gaussian",
+    "dataset_path": "../data/deepfilternet3/gaussian/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/deepfilternet3/gaussian/",
+    "results_output_path": "../results/deepfilternet3/gaussian/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.16572624709725298,
+  "EER_threshold": 0.7677677677677678,
+  "minDCF": 0.009400191511189454,
+  "best_threshold": 0.8804583968939604,
+  "metrics": {
+    "confusion_matrix": { "tn": 33426036, "fp": 6718484, "fn": 234492, "tp": 1194509 },
+    "accuracy": 0.832754699800385,
+    "precision": 0.15095539702865907,
+    "recall": 0.8359049433835246,
+    "f1_score": 0.25572891611790805
+  }
+}

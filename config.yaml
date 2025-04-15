@@ -1,5 +1,8 @@
-dataset_name: 'vox1_test_wav_snr_5_Babble'
-dataset_path: '../data/noisy_bg/vox1_test_wav_bq_noise/Babble/'
+# dataset_name: 'vox1_test_wav_snr_5_Babble'
+# dataset_path: '../data/noisy_bg/vox1_test_wav_bq_noise/Babble/'
+
+dataset_name: 'vox1_test_wav_snr_0_Neighbor'
+dataset_path: '../data/deepfilternet3/Neighbor/'
 
 # max_len
 #   set 0 if full length of audio is to be used, unforunately batching is broken for variable length audio and it is inefficient to use full length audio.
@@ -9,8 +12,8 @@ max_len: 64_000
 # batch_size
 
 batch_size: 64
-embeddings_output_path: '../embeds/noisy_bg/vox1_test_wav_bq_noise/Babble/'
-results_output_path: '../results/noisy_bg/vox1_test_wav_bq_noise/Babble/'
+embeddings_output_path: '../embeds/deepfilternet3/Neighbor/'
+results_output_path: '../results/deepfilternet3/Neighbor/'
 dataset_type: 'voxceleb2'
 audio_repeat: False
 windowed: True

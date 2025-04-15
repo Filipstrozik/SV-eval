@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_wav_snr_20_AirConditioner",
+    "dataset_path": "../data/deepfilternet3/AirConditioner/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/deepfilternet3/AirConditioner/",
+    "results_output_path": "../results/deepfilternet3/AirConditioner/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.028281766069334538,
+  "EER_threshold": 0.6816816816816816,
+  "minDCF": 0.0030620897659931045,
+  "best_threshold": 0.7687169212598104,
+  "metrics": {
+    "confusion_matrix": { "tn": 39018779, "fp": 1125741, "fn": 40757, "tp": 1388244 },
+    "accuracy": 0.9719413229396663,
+    "precision": 0.5522085453970489,
+    "recall": 0.9714786763620179,
+    "f1_score": 0.7041587264068399
+  }
+}

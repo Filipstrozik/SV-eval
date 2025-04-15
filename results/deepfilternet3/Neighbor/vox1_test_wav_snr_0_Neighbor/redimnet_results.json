@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_wav_snr_0_Neighbor",
+    "dataset_path": "../data/deepfilternet3/Neighbor/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/deepfilternet3/Neighbor/",
+    "results_output_path": "../results/deepfilternet3/Neighbor/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "redimnet",
+    "fbank_processing": false,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.25753045813265985,
+  "EER_threshold": 0.6206206206206206,
+  "minDCF": 0.009992309520305493,
+  "best_threshold": 0.9556616493113883,
+  "metrics": {
+    "confusion_matrix": { "tn": 29776550, "fp": 10367970, "fn": 366960, "tp": 1062041 },
+    "accuracy": 0.741784440148815,
+    "precision": 0.09291688345706754,
+    "recall": 0.74320521819089,
+    "f1_score": 0.16518236393278116
+  }
+}

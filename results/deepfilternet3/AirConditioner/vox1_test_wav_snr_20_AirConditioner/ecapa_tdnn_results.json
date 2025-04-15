@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_wav_snr_20_AirConditioner",
+    "dataset_path": "../data/deepfilternet3/AirConditioner/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/deepfilternet3/AirConditioner/",
+    "results_output_path": "../results/deepfilternet3/AirConditioner/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.03193563540871104,
+  "EER_threshold": 0.6846846846846847,
+  "minDCF": 0.0031859168289354424,
+  "best_threshold": 0.7662181424665021,
+  "metrics": {
+    "confusion_matrix": { "tn": 38854387, "fp": 1290133, "fn": 45348, "tp": 1383653 },
+    "accuracy": 0.9678766443669758,
+    "precision": 0.5174883105828215,
+    "recall": 0.968265942431111,
+    "f1_score": 0.6744941913874641
+  }
+}

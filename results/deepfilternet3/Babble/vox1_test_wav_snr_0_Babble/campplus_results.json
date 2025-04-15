@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_wav_snr_0_Babble",
+    "dataset_path": "../data/deepfilternet3/Babble/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/deepfilternet3/Babble/",
+    "results_output_path": "../results/deepfilternet3/Babble/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.14646308929295562,
+  "EER_threshold": 0.6766766766766766,
+  "minDCF": 0.009138438001345834,
+  "best_threshold": 0.8179173462980383,
+  "metrics": {
+    "confusion_matrix": { "tn": 34312899, "fp": 5831621, "fn": 211007, "tp": 1217994 },
+    "accuracy": 0.8546520031343989,
+    "precision": 0.17277454158844135,
+    "recall": 0.8523395015118954,
+    "f1_score": 0.28730962694854917
+  }
+}

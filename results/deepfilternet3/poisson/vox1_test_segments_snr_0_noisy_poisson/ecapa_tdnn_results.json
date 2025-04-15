@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_segments_snr_0_noisy_poisson",
+    "dataset_path": "../data/deepfilternet3/poisson/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/deepfilternet3/poisson/",
+    "results_output_path": "../results/deepfilternet3/poisson/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.048946856051344335,
+  "EER_threshold": 0.6676676676676676,
+  "minDCF": 0.004386961145717655,
+  "best_threshold": 0.7680361142029634,
+  "metrics": {
+    "confusion_matrix": { "tn": 38177153, "fp": 1967367, "fn": 69859, "tp": 1359142 },
+    "accuracy": 0.9509970300567037,
+    "precision": 0.40857908395858844,
+    "recall": 0.9511134002005597,
+    "f1_score": 0.5716072513778754
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "config": {
+    "dataset_name": "vox1_test_wav_snr_10_Neighbor",
+    "dataset_path": "../data/deepfilternet3/Neighbor/",
+    "max_len": 64000,
+    "batch_size": 64,
+    "embeddings_output_path": "../embeds/deepfilternet3/Neighbor/",
+    "results_output_path": "../results/deepfilternet3/Neighbor/",
+    "dataset_type": "voxceleb2",
+    "audio_repeat": false,
+    "windowed": true,
+    "calculate_only_embeddings": false,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.09344649100842695,
+  "EER_threshold": 0.6476476476476476,
+  "minDCF": 0.006049133407991903,
+  "best_threshold": 0.7692069320588022,
+  "metrics": {
+    "confusion_matrix": { "tn": 36428043, "fp": 3716477, "fn": 134777, "tp": 1294224 },
+    "accuracy": 0.9073628139411141,
+    "precision": 0.25829200345420733,
+    "recall": 0.9056844606826727,
+    "f1_score": 0.40195151887463115
+  }
+}
