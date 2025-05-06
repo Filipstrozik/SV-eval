@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_segments_snr_10_noisy_gaussian",
+    "dataset_path": "../data/metricgan/gaussian/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/gaussian/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/gaussian/",
+    "windowed": true,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.1391648812125406,
+  "EER_threshold": 0.6916916916916916,
+  "minDCF": 0.00853739770812301,
+  "best_threshold": 0.8269603526270067,
+  "metrics": {
+    "confusion_matrix": { "tn": 34581895, "fp": 5562625, "fn": 199724, "tp": 1229277 },
+    "accuracy": 0.8613937703279931,
+    "precision": 0.18099156907741012,
+    "recall": 0.8602352272671607,
+    "f1_score": 0.2990613074987018
+  }
+}

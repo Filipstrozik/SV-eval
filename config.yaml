@@ -1,21 +1,10 @@
-# dataset_name: 'vox1_test_wav_snr_5_Babble'
-# dataset_path: '../data/noisy_bg/vox1_test_wav_bq_noise/Babble/'
-
-dataset_name: 'vox1_test_wav_snr_0_Neighbor'
-dataset_path: '../data/deepfilternet3/Neighbor/'
-
-# max_len
-#   set 0 if full length of audio is to be used, unforunately batching is broken for variable length audio and it is inefficient to use full length audio.
-#   set to a value greater than 0 to use fixed length audio, audio will be repeated or cut to this length. pass in samples eq 16000 for 1 second audio.
-#   4s = 64_000
-max_len: 64_000
-# batch_size
-
+audio_repeat: false
 batch_size: 64
-embeddings_output_path: '../embeds/deepfilternet3/Neighbor/'
-results_output_path: '../results/deepfilternet3/Neighbor/'
-dataset_type: 'voxceleb2'
-audio_repeat: False
-windowed: True
-calculate_only_embeddings: False
-# for config in ecapa campplus redimnet; do python src/main.py --model_config=$config; done
+calculate_only_embeddings: false
+dataset_name: vox1_test_wav_snr_20_AirConditioner
+dataset_path: ../data/metricgan/AirConditioner/
+dataset_type: voxceleb2
+embeddings_output_path: ../embeds/metricgan/AirConditioner/
+max_len: 64000
+results_output_path: ../results/metricgan/AirConditioner/
+windowed: true

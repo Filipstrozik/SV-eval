@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_0_Neighbor",
+    "dataset_path": "../data/metricgan/Neighbor/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/Neighbor/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/Neighbor/",
+    "windowed": true,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.30160551976536587,
+  "EER_threshold": 0.6366366366366366,
+  "minDCF": 0.009983204559940242,
+  "best_threshold": 0.9119609718148535,
+  "metrics": {
+    "confusion_matrix": { "tn": 28021356, "fp": 12123164, "fn": 430448, "tp": 998553 },
+    "accuracy": 0.6980382777778192,
+    "precision": 0.07609926353388051,
+    "recall": 0.6987769777627867,
+    "f1_score": 0.1372513713756256
+  }
+}

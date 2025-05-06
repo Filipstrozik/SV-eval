@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_segments_snr_15_noisy_rayleigh",
+    "dataset_path": "../data/metricgan/rayleigh/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/rayleigh/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/rayleigh/",
+    "windowed": true,
+    "model_name": "redimnet",
+    "fbank_processing": false,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.09633824916113823,
+  "EER_threshold": 0.6976976976976977,
+  "minDCF": 0.006918806177318212,
+  "best_threshold": 0.8184643940584319,
+  "metrics": {
+    "confusion_matrix": { "tn": 36251462, "fp": 3893058, "fn": 136756, "tp": 1292245 },
+    "accuracy": 0.9030677723929132,
+    "precision": 0.24921301609568428,
+    "recall": 0.9042995771171609,
+    "f1_score": 0.39074254827114085
+  }
+}

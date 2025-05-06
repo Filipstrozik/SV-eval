@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_segments_snr_10_noisy_poisson",
+    "dataset_path": "../data/metricgan/poisson/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/poisson/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/poisson/",
+    "windowed": true,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.06653180052264909,
+  "EER_threshold": 0.6556556556556556,
+  "minDCF": 0.005606326403579089,
+  "best_threshold": 0.7673832940625714,
+  "metrics": {
+    "confusion_matrix": { "tn": 37461047, "fp": 2683473, "fn": 94626, "tp": 1334375 },
+    "accuracy": 0.933176239751259,
+    "precision": 0.3321118668501148,
+    "recall": 0.93378171183925,
+    "f1_score": 0.4899621781327149
+  }
+}

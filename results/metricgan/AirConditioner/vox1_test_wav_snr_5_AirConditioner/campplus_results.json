@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_5_AirConditioner",
+    "dataset_path": "../data/metricgan/AirConditioner/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/AirConditioner/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/AirConditioner/",
+    "windowed": true,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.11788809465168139,
+  "EER_threshold": 0.6666666666666666,
+  "minDCF": 0.008841423965180369,
+  "best_threshold": 0.8025811447634235,
+  "metrics": {
+    "confusion_matrix": { "tn": 35444597, "fp": 4699923, "fn": 169624, "tp": 1259377 },
+    "accuracy": 0.8828690261765415,
+    "precision": 0.21132968637256053,
+    "recall": 0.8812988934227478,
+    "f1_score": 0.3409111242219287
+  }
+}

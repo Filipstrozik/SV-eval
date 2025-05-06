@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_10_Babble",
+    "dataset_path": "../data/metricgan/Babble/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/Babble/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/Babble/",
+    "windowed": true,
+    "model_name": "redimnet",
+    "fbank_processing": false,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.09620181011207714,
+  "EER_threshold": 0.6846846846846847,
+  "minDCF": 0.007903325898662062,
+  "best_threshold": 0.8097612479546884,
+  "metrics": {
+    "confusion_matrix": { "tn": 36320119, "fp": 3824401, "fn": 138810, "tp": 1290191 },
+    "accuracy": 0.9046698257768448,
+    "precision": 0.2522568760127885,
+    "recall": 0.9028622093336534,
+    "f1_score": 0.3943371783666863
+  }
+}

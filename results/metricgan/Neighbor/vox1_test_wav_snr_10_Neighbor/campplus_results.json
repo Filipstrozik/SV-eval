@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_10_Neighbor",
+    "dataset_path": "../data/metricgan/Neighbor/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/Neighbor/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/Neighbor/",
+    "windowed": true,
+    "model_name": "campplus",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.10851188465365183,
+  "EER_threshold": 0.6416416416416416,
+  "minDCF": 0.0076508562986533635,
+  "best_threshold": 0.7701632864363082,
+  "metrics": {
+    "confusion_matrix": { "tn": 35787784, "fp": 4356736, "fn": 155043, "tp": 1273958 },
+    "accuracy": 0.8914746961172714,
+    "precision": 0.22625239446505174,
+    "recall": 0.8915025251906752,
+    "f1_score": 0.3609102092937443
+  }
+}

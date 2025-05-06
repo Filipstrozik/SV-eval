@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_segments_snr_0_noisy_poisson",
+    "dataset_path": "../data/metricgan/poisson/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/poisson/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/poisson/",
+    "windowed": true,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.1818783605471817,
+  "EER_threshold": 0.6426426426426426,
+  "minDCF": 0.009999888033668277,
+  "best_threshold": 0.986968310029657,
+  "metrics": {
+    "confusion_matrix": { "tn": 32867503, "fp": 7277017, "fn": 260773, "tp": 1168228 },
+    "accuracy": 0.8186877171168638,
+    "precision": 0.13832967545642547,
+    "recall": 0.817513773608276,
+    "f1_score": 0.23662120631793052
+  }
+}

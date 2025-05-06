@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_segments_snr_15_noisy_gaussian",
+    "dataset_path": "../data/metricgan/gaussian/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/gaussian/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/gaussian/",
+    "windowed": true,
+    "model_name": "redimnet",
+    "fbank_processing": false,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.09541403215387456,
+  "EER_threshold": 0.6986986986986987,
+  "minDCF": 0.006925214889994025,
+  "best_threshold": 0.8192378883366589,
+  "metrics": {
+    "confusion_matrix": { "tn": 36334909, "fp": 3809611, "fn": 137085, "tp": 1291916 },
+    "accuracy": 0.9050670738232636,
+    "precision": 0.25324103939859577,
+    "recall": 0.9040693463475533,
+    "f1_score": 0.39565437894148836
+  }
+}

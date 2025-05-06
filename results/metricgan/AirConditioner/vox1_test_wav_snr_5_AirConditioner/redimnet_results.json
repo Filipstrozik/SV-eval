@@ -1,0 +1,29 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_5_AirConditioner",
+    "dataset_path": "../data/metricgan/AirConditioner/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/metricgan/AirConditioner/",
+    "max_len": 64000,
+    "results_output_path": "../results/metricgan/AirConditioner/",
+    "windowed": true,
+    "model_name": "redimnet",
+    "fbank_processing": false,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.10751409610820364,
+  "EER_threshold": 0.6856856856856857,
+  "minDCF": 0.008744186200919692,
+  "best_threshold": 0.8203124393810619,
+  "metrics": {
+    "confusion_matrix": { "tn": 35846236, "fp": 4298284, "fn": 154272, "tp": 1274729 },
+    "accuracy": 0.8928992326630213,
+    "precision": 0.22873246482647716,
+    "recall": 0.8920420629516704,
+    "f1_score": 0.3641035279278219
+  }
+}
