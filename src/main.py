@@ -49,6 +49,11 @@ threshold = config.get("threshold", None)
 dataset_type = config.get("dataset_type", "voxceleb2")
 windowed = config.get("windowed", False)
 calculate_only_embeddings = config.get("calculate_only_embeddings", False)
+# window_smoothin
+window_smoothing = config.get("window_smoothing", False)
+window_smoothing_type = config.get("window_smoothing_type")
+window_smoothing_window_size = config.get("window_smoothing_window_size")
+
 
 logging.info(f"Dataset: {dataset_name}")
 
@@ -78,7 +83,16 @@ if max_len == 0:
         embeddings = evaluate_torch_model_various(model, dataloader, device="cpu")
 else:
     logging.info(f"Dataset: Fixed length")
-    audio_dataset = AudioDataset(df, max_len, audio_repeat, model, fbank_processing)
+    audio_dataset = AudioDataset(
+        df,
+        max_len,
+        audio_repeat,
+        model,
+        fbank_processing,
+        window_smoothing,
+        window_smoothing_type,
+        window_smoothing_window_size
+    )
     audio_loader = DataLoader(audio_dataset, batch_size=batch_size, shuffle=False)
     try:
         embeddings = evaluate_model(model, audio_loader, device=device)
@@ -115,10 +129,10 @@ logging.info(f"EER: {EER} with threshold {EER_threshold}")
 
 # plot_frr_far(FAR, FRR, EER, EER_threshold, thresholds)
 
-min_dcf, best_threshold = calculate_min_dcf(
-    scores, class_labels, p_target=0.01, c_miss=1, c_fa=1
-)
-logging.info(f"minDCF: {min_dcf:.4f}, Best Threshold: {best_threshold:.4f}")
+# min_dcf, best_threshold = calculate_min_dcf(
+#     scores, class_labels, p_target=0.01, c_miss=1, c_fa=1
+# )
+# logging.info(f"minDCF: {min_dcf:.4f}, Best Threshold: {best_threshold:.4f}")
 
 
 metrics = evaluate_metrics(scores, class_labels, EER_threshold)
@@ -127,8 +141,8 @@ results = {
     "config": config,
     "EER": EER,
     "EER_threshold": EER_threshold,
-    "minDCF": min_dcf,
-    "best_threshold": best_threshold,
+    # "minDCF": min_dcf,
+    # "best_threshold": best_threshold,
     "metrics": metrics,
 }
 

@@ -26,7 +26,7 @@ import yaml
 
 sys.path.append("./helper_libs")
 from redimnet.model import ReDimNetWrap
-
+from scipy import signal, ndimage
 
 # --- merge configs ---
 
@@ -236,13 +236,18 @@ def allign_dataframe_durations_celeb2(df, window_size, new_dataset_dir):
 class AudioDataset(Dataset):
 
     def __init__(
-        self, dataframe, max_len, repeat=False, model=None, fbank=False
+        self, dataframe, max_len, repeat=False, model=None, fbank=False, window_smoothing = False,
+        window_smoothing_type=None,
+        window_smoothing_window_size=None,
     ) -> None:
         self.dataframe = dataframe
         self.max_len = max_len
         self.model = model
         self.repeat = repeat
         self.fbank = fbank
+        self.window_filter_enabled = window_smoothing
+        self.filter_type = window_smoothing_type
+        self.window_size = window_smoothing_window_size
 
     def __len__(self) -> int:
         return len(self.dataframe)
@@ -259,6 +264,9 @@ class AudioDataset(Dataset):
         else:
             waveform = pad_or_cut_wave(waveform, self.max_len)
 
+        if self.window_filter_enabled:
+            waveform = apply_window_filter(waveform, self.filter_type, self.window_size, sample_rate)
+
         sample = {"path": audio_path, "waveform": waveform, "sample_rate": sample_rate}
 
         if self.fbank and self.model:
@@ -266,6 +274,84 @@ class AudioDataset(Dataset):
             sample["waveform"] = fbank
 
         return sample
+
+
+def apply_window_filter(waveform, filter_type, window_size, sample_rate):
+    """
+    Apply various window filters to smooth audio signals and mitigate noise
+    while preserving the original volume level.
+
+    Args:
+        waveform (torch.Tensor): The input waveform tensor of shape [1, time] (mono)
+        filter_type (str): The type of filter to apply ('gaussian', 'median', 'mean', 'savgol')
+        window_size (int): The size of the filter window in milliseconds
+        sample_rate (int): The sample rate of the audio in Hz
+
+    Returns:
+        torch.Tensor: The filtered waveform with the same shape and volume as input
+    """
+
+    # Convert window size from milliseconds to samples
+    window_samples = int(window_size * sample_rate / 1000)
+
+    # Make sure window size is odd for certain filters
+    if filter_type in ["median", "gaussian", "savgol"] and window_samples % 2 == 0:
+        window_samples += 1
+
+    # Ensure minimum window size
+    window_samples = max(window_samples, 3)
+
+    # Process each channel separately (though we expect mono audio)
+    channels = waveform.shape[0]
+    filtered_waveform = torch.zeros_like(waveform)
+
+    for c in range(channels):
+        # Convert to numpy for processing
+        channel_data = waveform[c].numpy()
+        
+        # Calculate original RMS for volume preservation
+        original_rms = np.sqrt(np.mean(channel_data**2))
+
+        if filter_type == "gaussian":
+            # Standard deviation for Gaussian kernel
+            sigma = window_samples / 6.0  # Rule of thumb: 6 sigma spans the window
+            # Apply Gaussian filter
+            filtered_data = ndimage.gaussian_filter1d(channel_data, sigma=sigma)
+
+        elif filter_type == "median":
+            # Apply median filter
+            filtered_data = signal.medfilt(channel_data, kernel_size=window_samples)
+
+        elif filter_type == "mean":
+            # Apply moving average filter
+            kernel = np.ones(window_samples) / window_samples
+            filtered_data = signal.convolve(channel_data, kernel, mode="same")
+
+        elif filter_type == "savgol":
+            # Savitzky-Golay filter for smooth filtering preserving signal shape
+            poly_order = min(
+                3, window_samples - 1
+            )  # Polynomial order must be less than window size
+            filtered_data = signal.savgol_filter(
+                channel_data, window_samples, poly_order
+            )
+
+        else:
+            raise ValueError(
+                f"Unsupported filter type: {filter_type}. Use 'gaussian', 'median', 'mean', or 'savgol'."
+            )
+        
+        # Calculate filtered RMS
+        filtered_rms = np.sqrt(np.mean(filtered_data**2))
+        
+        # Scale filtered data to match original volume (avoid division by zero)
+        if filtered_rms > 1e-10:  # Small threshold to avoid division by very small numbers
+            filtered_data = filtered_data * (original_rms / filtered_rms)
+
+        # Convert back to tensor
+        filtered_waveform[c] = torch.from_numpy(filtered_data)
+
+    return filtered_waveform
 
 
 class VariableLengthAudioDataset(Dataset):
@@ -314,6 +400,13 @@ def load_ecapa_tdnn_model(device="mps") -> Speaker:
     ecapa_tdnn.set_device(device)
     return ecapa_tdnn
 
+def load_ecapa_tdnn_model_ft(device="mps"):
+    ecapa_tdnn = wespeaker.load_model_local("../models/voxceleb_ECAPA1024")
+    checkpoint_name = "best_clean_3.5635.pth"
+    checkpoint = torch.load("../models/voxceleb_ECAPA1024_ORG/" + checkpoint_name)
+    ecapa_tdnn.model.load_state_dict(checkpoint["model_state_dict"])
+    ecapa_tdnn.set_device(device)
+    return ecapa_tdnn
 
 def load_resnet34_model(device):
     resnet34_model = wespeaker.load_model_local("../models/voxceleb_resnet34")
@@ -363,6 +456,8 @@ def load_model(model_name, device="mps") -> Speaker:
             return load_redimnet_model(device)
         case "ecapa2":
             return load_ecapa2_model(device)
+        case "ecapa_tdnn_ft":
+            return load_ecapa_tdnn_model_ft(device)
         case _:
             raise ValueError(f"Model {model_name} not supported")
 

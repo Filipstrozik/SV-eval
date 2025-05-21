@@ -1,10 +1,13 @@
 audio_repeat: false
 batch_size: 64
 calculate_only_embeddings: false
-dataset_name: vox1_test_wav_snr_20_AirConditioner
-dataset_path: ../data/metricgan/AirConditioner/
+dataset_name: vox1_test_segments_snr_20_noisy_gaussian
+dataset_path: ../data/noisy/gaussian/
 dataset_type: voxceleb2
-embeddings_output_path: ../embeds/metricgan/AirConditioner/
+embeddings_output_path: ../embeds/smooting/type_median_size_12/gaussian/
 max_len: 64000
-results_output_path: ../results/metricgan/AirConditioner/
+results_output_path: ../results/smooting/type_median_size_12/gaussian/
+window_smoothing: true
+window_smoothing_type: median
+window_smoothing_window_size: 12
 windowed: true
