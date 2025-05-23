@@ -24,15 +24,16 @@ def create_config(
     window_smoothing_type: str = "median",
     window_smoothing_window_size: int = 5,
 ) -> Dict:
-    experiment_name = "smooting"
-    if probabilistic:
+
+    if window_smoothing:
+        experiment_name = "window_smoothing"
         return {
             "dataset_name": dataset_name,
-            "dataset_path": f"../data/noisy/{noise_type}/",
+            "dataset_path": f"../data/{experiment_name}/filter_{window_smoothing_type}_{window_smoothing_window_size}ms/{noise_type}/",
             "max_len": 64000,
             "batch_size": 64,
-            "embeddings_output_path": f"../embeds/{experiment_name}/type_{window_smoothing_type}_size_{window_smoothing_window_size}/{noise_type}/",
-            "results_output_path": f"../results/{experiment_name}/type_{window_smoothing_type}_size_{window_smoothing_window_size}/{noise_type}/",
+            "embeddings_output_path": f"../embeds/{experiment_name}/filter_{window_smoothing_type}_{window_smoothing_window_size}ms/{noise_type}/",
+            "results_output_path": f"../results/{experiment_name}/filter_{window_smoothing_type}_{window_smoothing_window_size}ms/{noise_type}/",
             "dataset_type": "voxceleb2",
             "audio_repeat": False,
             "windowed": True,
@@ -42,21 +43,38 @@ def create_config(
             "window_smoothing_window_size": window_smoothing_window_size,
         }
     else:
-        return {
-            "dataset_name": dataset_name,
-            "dataset_path": f"../data/noisy_bg/vox_test_wav_bq_noise/{noise_type}/",
-            "max_len": 64000,
-            "batch_size": 64,
-            "embeddings_output_path": f"../embeds/{experiment_name}/type_{window_smoothing_type}_size_{window_smoothing_window_size}/{noise_type}/",
-            "results_output_path": f"../results/{experiment_name}/type_{window_smoothing_type}_size_{window_smoothing_window_size}/{noise_type}/",
-            "dataset_type": "voxceleb2",
-            "audio_repeat": False,
-            "windowed": True,
-            "calculate_only_embeddings": False,
-            "window_smoothing": window_smoothing,
-            "window_smoothing_type": window_smoothing_type,
-            "window_smoothing_window_size": window_smoothing_window_size,
-        }
+        if probabilistic:
+            return {
+                "dataset_name": dataset_name,
+                "dataset_path": f"../data/noisy/{noise_type}/",
+                "max_len": 64000,
+                "batch_size": 64,
+                "embeddings_output_path": f"../embeds/noisy/{noise_type}/",
+                "results_output_path": f"../results/noisy/{noise_type}/",
+                "dataset_type": "voxceleb2",
+                "audio_repeat": False,
+                "windowed": True,
+                "calculate_only_embeddings": False,
+                "window_smoothing": window_smoothing,
+                "window_smoothing_type": window_smoothing_type,
+                "window_smoothing_window_size": window_smoothing_window_size,
+            }
+        else:
+            return {
+                "dataset_name": dataset_name,
+                "dataset_path": f"../data/noisy_bg/vox1_test_wav_bq_noise/{noise_type}/",
+                "max_len": 64000,
+                "batch_size": 64,
+                "embeddings_output_path": f"../embeds/noisy_bg/vox1_test_wav_bq_noise/{noise_type}/",
+                "results_output_path": f"../results/noisy_bg/vox1_test_wav_bq_noise/{noise_type}/",
+                "dataset_type": "voxceleb2",
+                "audio_repeat": False,
+                "windowed": True,
+                "calculate_only_embeddings": False,
+                "window_smoothing": window_smoothing,
+                "window_smoothing_type": window_smoothing_type,
+                "window_smoothing_window_size": window_smoothing_window_size,
+            }
 
 
 def run_experiment(config: Dict, model_config: str, project_root: str):
@@ -88,60 +106,90 @@ def main():
     logging.info(f"Running experiments from: {project_root}")
 
     # Configuration
-    # synthetic_noise = ["gaussian", "poisson", "rayleigh"]
-    synthetic_noise = ["gaussian"]
-    # real_noise = ["Babble", "Neighbor", "AirConditioner"]
-    real_noise = []
-    # snr_values = [0, 5, 10, 15, 20]
-    snr_values = [20]
-    model_configs = ["ecapa"]
-    # model_configs = ["ecapa", "campplus", "redimnet"]
+    synthetic_noise = ["gaussian", "poisson", "rayleigh"]
+    # synthetic_noise = []
+    real_noise = ["Babble", "Neighbor", "AirConditioner"]
+    # real_noise = []
+    snr_values = [0, 5, 10, 15, 20]
+    # snr_values = [20]
+    # model_configs = ["ecapa_tdnn_ft"]
+    model_configs = ["ecapa", "campplus", "redimnet"]
     window_smoothing = True
-    window_smoothing_types = ["median", "gaussian"]
-    window_smoothing_window_sizes = [12, 25, 50]
+    window_smoothing_types = ["mean", "savgol"]
+    window_smoothing_window_sizes = [12, 25]
 
     total_experiments = (
-        len(synthetic_noise + real_noise) * len(snr_values) * len(model_configs)
+        len(synthetic_noise + real_noise) * len(snr_values) * len(model_configs) * len(window_smoothing_types) * len(window_smoothing_window_sizes)
     )
     logging.info(f"Total experiments to run: {total_experiments}")
 
     # Process synthetic noise types
-    for noise in synthetic_noise:
-        for snr in snr_values:
-            for smoothing_type in window_smoothing_types:
-                for smoothing_window_size in window_smoothing_window_sizes:
-                    dataset_name = f"vox1_test_segments_snr_{snr}_noisy_{noise}"
-                    config = create_config(
-                        dataset_name,
-                        noise,
-                        probabilistic=True,
-                        window_smoothing=window_smoothing,
-                        window_smoothing_type=smoothing_type,
-                        window_smoothing_window_size=smoothing_window_size,
-                    )
+    if not window_smoothing:
+        for noise in synthetic_noise:
+            for snr in snr_values:
+                dataset_name = f"vox1_test_segments_snr_{snr}_noisy_{noise}"
+                config = create_config(
+                            dataset_name,
+                            noise,
+                            probabilistic=True,
+                            window_smoothing=window_smoothing,
+                        )
 
-                    logging.info(f"\nProcessing {dataset_name}")
-                    for model in model_configs:
-                        run_experiment(config, model, project_root)
+                logging.info(f"\nProcessing {dataset_name}")
+                for model in model_configs:
+                    run_experiment(config, model, project_root)
 
-    # Process real background noise types
-    for noise in real_noise:
-        for snr in snr_values:
-            for smoothing_type in window_smoothing_types:
-                for smoothing_window_size in window_smoothing_window_sizes:
-                    dataset_name = f"vox1_test_wav_snr_{snr}_{noise}"
-                    config = create_config(
+        # Process real background noise types
+        for noise in real_noise:
+            for snr in snr_values:
+                dataset_name = f"vox1_test_wav_snr_{snr}_{noise}"
+                config = create_config(
                         dataset_name,
                         noise,
                         probabilistic=False,
                         window_smoothing=window_smoothing,
-                        window_smoothing_type=smoothing_type,
-                        window_smoothing_window_size=smoothing_window_size,
                     )
+                logging.info(f"\nProcessing {dataset_name}")
+                for model in model_configs:
+                    run_experiment(config, model, project_root)
 
-            logging.info(f"\nProcessing {dataset_name}")
-            for model in model_configs:
-                run_experiment(config, model, project_root)
+    else:
+        for noise in synthetic_noise:
+            for snr in snr_values:
+                for smoothing_type in window_smoothing_types:
+                    for smoothing_window_size in window_smoothing_window_sizes:
+                        dataset_name = f"vox1_test_wav_snr_{snr}_{noise}"
+                        config = create_config(
+                            dataset_name,
+                            noise,
+                            probabilistic=True,
+                            window_smoothing=window_smoothing,
+                            window_smoothing_type=smoothing_type,
+                            window_smoothing_window_size=smoothing_window_size,
+                        )
+
+                        logging.info(f"\nProcessing {dataset_name}")
+                        for model in model_configs:
+                            run_experiment(config, model, project_root)
+
+        # Process real background noise types
+        for noise in real_noise:
+            for snr in snr_values:
+                for smoothing_type in window_smoothing_types:
+                    for smoothing_window_size in window_smoothing_window_sizes:
+                        dataset_name = f"vox1_test_wav_snr_{snr}_{noise}"
+                        config = create_config(
+                            dataset_name,
+                            noise,
+                            probabilistic=False,
+                            window_smoothing=window_smoothing,
+                            window_smoothing_type=smoothing_type,
+                            window_smoothing_window_size=smoothing_window_size,
+                        )
+
+                        logging.info(f"\nProcessing {dataset_name}")
+                        for model in model_configs:
+                            run_experiment(config, model, project_root)
 
 
 if __name__ == "__main__":

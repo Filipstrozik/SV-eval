@@ -1,0 +1,30 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_5_AirConditioner",
+    "dataset_path": "../data/noisy_bg/vox1_test_wav_bq_noise/AirConditioner/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/noisy_bg/vox1_test_wav_bq_noise/AirConditioner/",
+    "max_len": 64000,
+    "results_output_path": "../results/noisy_bg/vox1_test_wav_bq_noise/AirConditioner/",
+    "window_smoothing": false,
+    "window_smoothing_type": "median",
+    "window_smoothing_window_size": 5,
+    "windowed": true,
+    "model_name": "ecapa_tdnn_ft",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.04529895974756787,
+  "EER_threshold": 0.6456456456456456,
+  "metrics": {
+    "confusion_matrix": { "tn": 38335784, "fp": 1808736, "fn": 65080, "tp": 1363921 },
+    "accuracy": 0.9549276569574177,
+    "precision": 0.429898662225384,
+    "recall": 0.9544576945712424,
+    "f1_score": 0.5927954663297447
+  }
+}

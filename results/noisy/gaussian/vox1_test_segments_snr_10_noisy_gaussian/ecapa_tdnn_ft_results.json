@@ -1,0 +1,30 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_segments_snr_10_noisy_gaussian",
+    "dataset_path": "../data/noisy/gaussian/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/noisy/gaussian/",
+    "max_len": 64000,
+    "results_output_path": "../results/noisy/gaussian/",
+    "window_smoothing": false,
+    "window_smoothing_type": "median",
+    "window_smoothing_window_size": 5,
+    "windowed": true,
+    "model_name": "ecapa_tdnn_ft",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.04237357881766595,
+  "EER_threshold": 0.6526526526526526,
+  "metrics": {
+    "confusion_matrix": { "tn": 38426123, "fp": 1718397, "fn": 59935, "tp": 1369066 },
+    "accuracy": 0.9572244073336968,
+    "precision": 0.4434275001838079,
+    "recall": 0.958058111925744,
+    "f1_score": 0.6062556902922286
+  }
+}

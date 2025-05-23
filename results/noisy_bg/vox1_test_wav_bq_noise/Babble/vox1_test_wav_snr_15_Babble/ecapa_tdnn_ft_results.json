@@ -1,0 +1,30 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_15_Babble",
+    "dataset_path": "../data/noisy_bg/vox1_test_wav_bq_noise/Babble/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/noisy_bg/vox1_test_wav_bq_noise/Babble/",
+    "max_len": 64000,
+    "results_output_path": "../results/noisy_bg/vox1_test_wav_bq_noise/Babble/",
+    "window_smoothing": false,
+    "window_smoothing_type": "median",
+    "window_smoothing_window_size": 5,
+    "windowed": true,
+    "model_name": "ecapa_tdnn_ft",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.03891332162595251,
+  "EER_threshold": 0.6506506506506506,
+  "metrics": {
+    "confusion_matrix": { "tn": 38568284, "fp": 1576236, "fn": 55106, "tp": 1373895 },
+    "accuracy": 0.9607600712963427,
+    "precision": 0.46570643812088347,
+    "recall": 0.9614373957750905,
+    "f1_score": 0.6274736637306206
+  }
+}

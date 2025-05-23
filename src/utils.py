@@ -402,8 +402,8 @@ def load_ecapa_tdnn_model(device="mps") -> Speaker:
 
 def load_ecapa_tdnn_model_ft(device="mps"):
     ecapa_tdnn = wespeaker.load_model_local("../models/voxceleb_ECAPA1024")
-    checkpoint_name = "best_clean_3.5635.pth"
-    checkpoint = torch.load("../models/voxceleb_ECAPA1024_ORG/" + checkpoint_name)
+    checkpoint_name = "epoch_18.pth"
+    checkpoint = torch.load("../models/voxceleb_ECAPA1024_FT/" + checkpoint_name)
     ecapa_tdnn.model.load_state_dict(checkpoint["model_state_dict"])
     ecapa_tdnn.set_device(device)
     return ecapa_tdnn

@@ -1,0 +1,30 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_segments_snr_10_noisy_poisson",
+    "dataset_path": "../data/noisy/poisson/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/noisy/poisson/",
+    "max_len": 64000,
+    "results_output_path": "../results/noisy/poisson/",
+    "window_smoothing": false,
+    "window_smoothing_type": "median",
+    "window_smoothing_window_size": 5,
+    "windowed": true,
+    "model_name": "ecapa_tdnn_ft",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.023284268755978825,
+  "EER_threshold": 0.6626626626626626,
+  "metrics": {
+    "confusion_matrix": { "tn": 39201181, "fp": 943339, "fn": 32967, "tp": 1396034 },
+    "accuracy": 0.9765161579650663,
+    "precision": 0.5967556264007493,
+    "recall": 0.9769300371378327,
+    "f1_score": 0.7409211506076626
+  }
+}
