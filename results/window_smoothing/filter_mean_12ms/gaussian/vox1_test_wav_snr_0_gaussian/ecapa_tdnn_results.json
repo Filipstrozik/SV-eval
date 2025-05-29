@@ -1,0 +1,30 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_0_gaussian",
+    "dataset_path": "../data/window_smoothing/filter_mean_12ms/gaussian/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/window_smoothing/filter_mean_12ms/gaussian/",
+    "max_len": 64000,
+    "results_output_path": "../results/window_smoothing/filter_mean_12ms/gaussian/",
+    "window_smoothing": true,
+    "window_smoothing_type": "mean",
+    "window_smoothing_window_size": 12,
+    "windowed": true,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.18756925579836417,
+  "EER_threshold": 0.6386386386386387,
+  "metrics": {
+    "confusion_matrix": { "tn": 32552848, "fp": 7591672, "fn": 265837, "tp": 1163164 },
+    "accuracy": 0.8109972691511984,
+    "precision": 0.13285959896907262,
+    "recall": 0.8139700392092097,
+    "f1_score": 0.22843334982678926
+  }
+}

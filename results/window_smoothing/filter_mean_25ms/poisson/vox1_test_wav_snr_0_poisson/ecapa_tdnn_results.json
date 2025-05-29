@@ -1,0 +1,30 @@
+{
+  "config": {
+    "audio_repeat": false,
+    "batch_size": 64,
+    "calculate_only_embeddings": false,
+    "dataset_name": "vox1_test_wav_snr_0_poisson",
+    "dataset_path": "../data/window_smoothing/filter_mean_25ms/poisson/",
+    "dataset_type": "voxceleb2",
+    "embeddings_output_path": "../embeds/window_smoothing/filter_mean_25ms/poisson/",
+    "max_len": 64000,
+    "results_output_path": "../results/window_smoothing/filter_mean_25ms/poisson/",
+    "window_smoothing": true,
+    "window_smoothing_type": "mean",
+    "window_smoothing_window_size": 25,
+    "windowed": true,
+    "model_name": "ecapa_tdnn",
+    "fbank_processing": true,
+    "device": "cuda:0",
+    "threshold": null
+  },
+  "EER": 0.21211391072202335,
+  "EER_threshold": 0.6866866866866866,
+  "metrics": {
+    "confusion_matrix": { "tn": 31582001, "fp": 8562519, "fn": 301427, "tp": 1127574 },
+    "accuracy": 0.7867886629087779,
+    "precision": 0.1163635890801048,
+    "recall": 0.7890645282963413,
+    "f1_score": 0.2028176036644712
+  }
+}
