@@ -1,0 +1,4 @@
+model_name: 'ecapa_tdnn_ft_aug_25'
+fbank_processing: True
+device: 'cuda:0'
+threshold:
